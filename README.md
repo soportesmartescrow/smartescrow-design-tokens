@@ -37,7 +37,7 @@ Tres capas:
 ### Flujo de generación
 
 ```
-tokens.mjs ──(npm run build:tokens)──▶ tokens.css ──(css-loader / <link>)──▶ navegador
+tokens.mjs ──(npm run build)──▶ tokens.css ──(css-loader / <link>)──▶ navegador
      │
      └──(import)──▶ vuetify-theme.mjs ──▶ createVuetify({ themes }) en app.js
 ```
@@ -187,21 +187,112 @@ como override con *fallback*:
 
 ---
 
-## 7. Modificar tokens
+## 7. Desarrollar y expandir el sistema
 
-1. Edita **`tokens.mjs`** (único sitio).
-2. Regenera el CSS:
-   ```bash
-   npm run build:tokens          # o: node assets/design-tokens/build-tokens.mjs
-   ```
-3. Recompila los assets si procede:
-   ```bash
-   lando exec node_internal -- npm run build      # producción
-   lando exec node_internal -- npm run watch       # desarrollo
-   ```
+### 7.0 ¿Hay que bajárselo aparte?
 
-`tokens.css` está versionado en git para que el artefacto portable exista sin paso de build;
-**pero siempre debe regenerarse desde `tokens.mjs`** (no editarlo a mano).
+- **Solo para CONSUMIR** (usar los tokens en una app): **no**. Se instala como dependencia
+  (§11): por tag git, por registry o como carpeta hermana `file:../design-tokens`.
+- **Para MODIFICAR / EXPANDIR** los tokens: **sí**, se trabaja sobre este repo. Dos formas:
+  - Clonarlo aparte (lo habitual si vienes de otro proyecto):
+    ```bash
+    git clone git@github.com:soportesmartescrow/smartescrow-design-tokens.git
+    cd smartescrow-design-tokens
+    npm install            # opcional; el generador no tiene dependencias
+    ```
+  - O editar el checkout que ya existe como hermano del consumidor (p. ej. `../design-tokens`
+    en ProntoPago). Como ese consumidor lo instala con `file:`, **los cambios se ven al
+    instante** al recompilar sus assets (ideal para iterar).
+
+### 7.1 Bucle de desarrollo
+
+```bash
+# 1) edita la fuente de verdad
+$EDITOR tokens.mjs
+# 2) regenera el CSS portable
+npm run build                 # = node build-tokens.mjs  → reescribe tokens.css
+# 3) revisa el resultado
+git diff tokens.css           # comprueba que los cambios son los esperados
+```
+> **Nunca** edites `tokens.css` a mano: es un artefacto generado y se sobreescribe.
+> La única fuente es `tokens.mjs`.
+
+### 7.2 Cómo añadir cosas (recetas)
+
+**a) Un nuevo tono en una escala de color existente** — solo `tokens.mjs`:
+```js
+// primitives.color.green
+green: { /* … */ 950: '#2a5230' },     // → genera  --se-green-950
+```
+
+**b) Una nueva familia de color** — solo `tokens.mjs` (las familias de color se emiten
+automáticamente: el generador recorre `primitives.color`):
+```js
+// primitives.color
+teal: { 100: '#d3efe9', 500: '#1f9b8a', 900: '#0b3b34' },   // → --se-teal-100/500/900
+```
+
+**c) Un nuevo token semántico** (lo que usan las apps) — define light **y** dark:
+```js
+// semantic.light
+'color-link': ref('blue.link'),
+// semantic.dark
+'color-link': ref('blue.ghost-border'),
+//            → --se-color-link  (con override dark automático)
+```
+Valores posibles en la capa semántica:
+- `ref('familia.tono')` → `var(--se-familia-tono)`.
+- `ref('slate.600', { brand: 'primary' })` → `var(--brand-primary, var(--se-slate-600))`
+  (respeta el branding por tenant, §5).
+- `raw('rgba(0,0,0,.5)')` → literal tal cual.
+
+**d) Exponerlo a Vuetify** (solo si Vuetify debe conocer ese color) — `tokens.mjs`:
+```js
+// vuetifyColorMap:  nombreVuetify -> nombre del token semántico
+'on-background': 'color-text',
+```
+
+**e) Una nueva categoría estructural** (p. ej. *motion*, *breakpoints*) — requiere **dos** pasos:
+```js
+// 1) tokens.mjs  →  primitives
+motion: { fast: '120ms', base: '200ms', slow: '320ms' },
+```
+```js
+// 2) build-tokens.mjs  →  dentro de :root, añade una línea emitScale
+${emitScale('motion', primitives.motion, `${p}-motion`)}   // → --se-motion-fast, …
+```
+(Las **familias de color** no necesitan el paso 2; el resto de escalas sí, porque se emiten una a una.)
+
+### 7.3 Convenciones (mantener la coherencia)
+
+- Nombres en **kebab-case** (`ghost-border`, no `ghostBorder`); prefijo siempre `--se-`.
+- **Preservar look**: si tokenizas un valor existente, usa su hex exacto (no “redondees”).
+- Reusa el **mismo naming/escalas** que `public/css/se-tokens.css` (sistema hermano): así un
+  componente escrito contra `var(--se-…)` funciona bajo cualquiera de las dos identidades.
+- Cada semántico nuevo: **siempre** con su variante en `semantic.dark`.
+
+### 7.4 Probar el cambio en un consumidor antes de publicar
+
+```bash
+# opción rápida: empaquetado en seco (lista de archivos + ejecuta 'prepare')
+npm pack --dry-run
+
+# opción real: enlazar este repo en el proyecto consumidor
+cd /ruta/al/proyecto
+npm install /ruta/a/smartescrow-design-tokens     # o: npm link
+npm run dev / encore dev                           # y revisa visualmente
+```
+
+### 7.5 Actualizar en git (subir los cambios)
+
+```bash
+npm run build                              # asegura tokens.css al día
+git add -A && git commit -m "feat: <qué añadiste>"
+npm version minor                          # SemVer (ver §10) — crea el tag
+git push origin main --tags
+```
+Los consumidores actualizan con `npm update` o re-instalando el tag (§10–§11).
+Detalle de publicación y versionado: **§9 y §10**.
 
 ---
 
@@ -238,25 +329,22 @@ siempre recibe un CSS coherente con `tokens.mjs`.
 > **Recomendado:** repositorio Git en la org `github.com/smartescrow/`, igual que el resto de
 > paquetes SmartEscrow (el SSO SDK se distribuye así, vía VCS). No requiere registry npm.
 
-### Opción A · Repo Git propio (recomendado, alineado con el stack actual)
+> **Este repositorio ES el paquete.** Su raíz vive en
+> `github.com/soportesmartescrow/smartescrow-design-tokens` (y, en local, como carpeta hermana
+> de los proyectos consumidores, p. ej. `../design-tokens`). ProntoPago lo consume vía
+> `file:../design-tokens`; otros proyectos, vía tag git.
 
-Primera vez — extraer esta carpeta a su propio repo:
+### Opción A · Repo Git (recomendado, alineado con el stack actual)
 ```bash
-# 1) Crear el repo en GitHub: smartescrow/prontopago-design-tokens
-# 2) Sembrarlo con el contenido de esta carpeta
-cd assets/design-tokens
-git init && git add . && git commit -m "feat: design tokens Pronto Pago v1.0.0"
-git branch -M main
-git remote add origin git@github.com:smartescrow/prontopago-design-tokens.git
-git push -u origin main
-git tag v1.0.0 && git push --tags          # las versiones se referencian por tag
+# trabajando en la raíz de ESTE repo
+npm run build                 # regenera tokens.css desde tokens.mjs
+git add -A && git commit -m "feat: <cambio>"
+git push origin main
+git tag v1.0.0 && git push --tags     # las versiones se referencian por tag
 ```
-> Mantén `assets/design-tokens/` en este proyecto como fuente de verdad y sincroniza el repo del
-> paquete cuando cambien los tokens (o usa un `git subtree split`).
 
 ### Opción B · Registry npm (si se habilita uno, p. ej. GitHub Packages)
 ```bash
-cd assets/design-tokens
 # autenticarse en el registry (~/.npmrc con //npm.pkg.github.com/:_authToken=...)
 npm publish        # 'prepare' regenera tokens.css antes de empaquetar
 ```
@@ -268,9 +356,8 @@ npm publish        # 'prepare' regenera tokens.css antes de empaquetar
 
 1. Edita **`tokens.mjs`** (único sitio).
 2. `npm run build:tokens` (regenera `tokens.css`).
-3. Sube la versión con **SemVer** y publica:
+3. Sube la versión con **SemVer** y publica (en la raíz de este repo):
    ```bash
-   cd assets/design-tokens
    npm version patch   # 1.0.0 -> 1.0.1  (fix sin cambio visual)
    # npm version minor # 1.1.0  (tokens nuevos, retrocompatibles)
    # npm version major # 2.0.0  (renombrar/eliminar tokens: rompe consumidores)
@@ -288,8 +375,11 @@ npm publish        # 'prepare' regenera tokens.css antes de empaquetar
 ### Instalar
 ```bash
 # Desde Git (Opción A) — fija siempre un tag:
-npm install github:smartescrow/prontopago-design-tokens#v1.0.0
-#   (equivalente SSH)  npm install git+ssh://git@github.com/smartescrow/prontopago-design-tokens.git#v1.0.0
+npm install github:soportesmartescrow/smartescrow-design-tokens#v1.0.0
+#   (equivalente SSH)  npm install git+ssh://git@github.com/soportesmartescrow/smartescrow-design-tokens.git#v1.0.0
+
+# Como carpeta hermana local (lo que usa ProntoPago hoy):
+npm install ../design-tokens          # -> "file:../design-tokens"
 
 # Desde registry npm (Opción B):
 npm install @smartescrow/prontopago-design-tokens
