@@ -1,6 +1,6 @@
 {
   "name": "@smartescrow/prontopago-design-tokens",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Design tokens de Pronto Pago (--se-*): paleta slate+verde, tipografía Poppins, radios, sombras, espaciado, z-index, modo oscuro y tema Vuetify. Artefacto portable para reproducir la estética de Pronto Pago en cualquier plataforma.",
   "type": "module",
   "license": "UNLICENSED",
