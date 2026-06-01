@@ -1,0 +1,216 @@
+/* ============================================================
+ * Pronto Pago — Design Tokens (CSS)  ·  ARCHIVO GENERADO
+ * ------------------------------------------------------------
+ * NO EDITAR A MANO. Fuente de verdad: assets/design-tokens/tokens.mjs
+ * Regenerar:  npm run build:tokens
+ *
+ * Artefacto portable: incluye este archivo en cualquier plataforma
+ * (Vue, EasyAdmin, Twig, HTML plano) para obtener la estética exacta
+ * de Pronto Pago. Modo oscuro: añade [data-se-theme="dark"] al <html>
+ * (o usa el tema Vuetify "smartEscrowDarkTheme", que aplica la clase
+ *  .v-theme--smartEscrowDarkTheme automáticamente).
+ *
+ * Branding por tenant (SSO SDK): los tokens de marca respetan
+ * var(--brand-primary|bg|text) si están definidos (base.html.twig).
+ * ============================================================ */
+
+:root {
+  /* ---------- PRIMITIVOS · color ---------- */
+  /* slate */
+  --se-slate-500: #424242;
+  --se-slate-550: #3d3d48;
+  --se-slate-600: #36414f;
+  --se-slate-650: #2c3e50;
+  --se-slate-700: #2e3e48;
+  --se-slate-750: #243b44;
+  --se-slate-800: #2c383a;
+  --se-slate-850: #2c2c30;
+  --se-slate-900: #24282c;
+  --se-slate-950: #1e2124;
+  /* green */
+  --se-green-50: #e5f3df;
+  --se-green-100: #b2e3ae;
+  --se-green-200: #a8cf95;
+  --se-green-300: #b9d16c;
+  --se-green-400: #8dc63f;
+  --se-green-450: #a4c43c;
+  --se-green-500: #87bd78;
+  --se-green-550: #84b278;
+  --se-green-600: #7ab62f;
+  --se-green-650: #6fb46a;
+  --se-green-700: #63a884;
+  --se-green-800: #529b5e;
+  --se-green-900: #3f7d49;
+  /* success */
+  --se-success-500: #64d26f;
+  /* gray */
+  --se-gray-0: #ffffff;
+  --se-gray-50: #f8f8f8;
+  --se-gray-100: #f5f5f5;
+  --se-gray-150: #f1f1f1;
+  --se-gray-175: #f0f0f0;
+  --se-gray-200: #eeeeee;
+  --se-gray-300: #e0e0e0;
+  --se-gray-400: #c1c1c1;
+  --se-gray-500: #a8a8a8;
+  --se-gray-550: #b0bec5;
+  --se-gray-600: #888888;
+  --se-gray-650: #757575;
+  --se-gray-700: #666666;
+  --se-gray-750: #616161;
+  --se-gray-800: #555555;
+  --se-gray-900: #333333;
+  --se-gray-950: #000000;
+  /* blue */
+  --se-blue-info: #3780ff;
+  --se-blue-link: #1976d2;
+  --se-blue-bootstrap: #0d6efd;
+  --se-blue-ghost: #c8ebfb;
+  --se-blue-ghost-border: #4a9eff;
+  /* red */
+  --se-red-text: #cb1d10;
+  --se-red-base: #e04b43;
+  --se-red-hover: #f44336;
+  /* orange */
+  --se-orange-warning: #ffa800;
+  /* purple */
+  --se-purple-secondary: #5564d7;
+  --se-purple-darken: #1f5592;
+  --se-purple-teal: #018786;
+
+  /* ---------- PRIMITIVOS · tipografía ---------- */
+  /* font-family */
+  --se-font-sans: 'Poppins', 'Roboto', system-ui, -apple-system, sans-serif;
+  --se-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  /* font-size */
+  --se-text-xs: 0.8rem;
+  --se-text-sm: 13px;
+  --se-text-base: 14px;
+  --se-text-md: 15px;
+  --se-text-lg: 18px;
+  --se-text-xl: 20px;
+  --se-text-2xl: 24px;
+  --se-text-3xl: 2rem;
+  /* font-weight */
+  --se-weight-regular: 400;
+  --se-weight-medium: 500;
+  --se-weight-bold: 700;
+
+  /* ---------- PRIMITIVOS · radios ---------- */
+  /* radius */
+  --se-r-xs: 4px;
+  --se-r-sm: 5px;
+  --se-r-md: 10px;
+  --se-r-lg: 12px;
+  --se-r-full: 999px;
+
+  /* ---------- PRIMITIVOS · sombras ---------- */
+  /* shadow */
+  --se-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --se-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --se-shadow-lg: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+  /* ---------- PRIMITIVOS · espaciado ---------- */
+  /* space */
+  --se-s-1: 4px;
+  --se-s-2: 8px;
+  --se-s-3: 12px;
+  --se-s-4: 16px;
+  --se-s-5: 20px;
+  --se-s-6: 24px;
+  --se-s-8: 32px;
+  --se-s-10: 40px;
+  --se-s-12: 48px;
+  --se-s-16: 64px;
+
+  /* ---------- PRIMITIVOS · z-index ---------- */
+  /* z-index */
+  --se-z-header: 999;
+  --se-z-overlay: 1100;
+  --se-z-loader: 1200;
+  --se-z-loader-card: 1999999999;
+  --se-z-toast: 2147483647;
+
+  /* ---------- SEMÁNTICOS (light) ---------- */
+  --se-color-primary: var(--brand-primary, var(--se-slate-600));
+  --se-color-primary-hover: var(--se-slate-700);
+  --se-color-on-primary: #ffffff;
+  --se-color-secondary: var(--se-purple-secondary);
+  --se-color-brand: var(--se-green-500);
+  --se-color-brand-hover: var(--se-green-650);
+  --se-color-brand-strong: var(--se-green-400);
+  --se-color-brand-strong-hover: var(--se-green-600);
+  --se-color-brand-subtle: var(--se-green-50);
+  --se-color-on-brand: #ffffff;
+  --se-color-success: var(--se-success-500);
+  --se-color-warning: var(--se-orange-warning);
+  --se-color-danger: var(--se-red-base);
+  --se-color-danger-hover: var(--se-red-hover);
+  --se-color-info: var(--se-blue-info);
+  --se-color-bg: var(--brand-bg, var(--se-gray-50));
+  --se-color-surface: var(--se-gray-0);
+  --se-color-surface-variant: var(--se-gray-100);
+  --se-color-surface-muted: var(--se-gray-200);
+  --se-color-text: var(--brand-text, var(--se-slate-600));
+  --se-color-text-muted: var(--se-gray-700);
+  --se-color-text-subtle: var(--se-gray-600);
+  --se-color-text-disabled: var(--se-gray-500);
+  --se-color-border: var(--se-gray-300);
+  --se-color-border-strong: var(--se-gray-400);
+  --se-color-scrollbar-track: var(--se-gray-150);
+  --se-color-scrollbar-thumb: var(--se-gray-400);
+  --se-color-scrollbar-thumb-brand: var(--se-green-500);
+  --se-color-overlay: rgba(0, 0, 0, 0.46);
+  --se-color-overlay-soft: rgba(0, 0, 0, 0.10);
+  --se-color-hover: rgba(75, 75, 75, 0.05);
+  --se-color-drag-ghost: var(--se-blue-ghost);
+  --se-color-drag-ghost-border: var(--se-blue-ghost-border);
+  --se-color-footer-bg: var(--se-slate-600);
+  --se-color-footer-text: var(--se-gray-550);
+  --se-color-footer-divider: var(--se-gray-750);
+}
+
+/* ============================================================
+ * MODO OSCURO — overrides de los tokens semánticos.
+ * .v-theme--smartEscrowDarkTheme  -> lo aplica Vuetify a la raíz de <v-app>.
+ * [data-se-theme="dark"]    -> activación manual en plataformas sin Vue.
+ * ============================================================ */
+.v-theme--smartEscrowDarkTheme,
+[data-se-theme="dark"] {
+  --se-color-primary: var(--brand-primary, var(--se-slate-500));
+  --se-color-primary-hover: var(--se-slate-550);
+  --se-color-on-primary: #ffffff;
+  --se-color-secondary: var(--se-purple-secondary);
+  --se-color-brand: var(--se-green-500);
+  --se-color-brand-hover: var(--se-green-200);
+  --se-color-brand-strong: var(--se-green-400);
+  --se-color-brand-strong-hover: var(--se-green-300);
+  --se-color-brand-subtle: var(--se-slate-800);
+  --se-color-on-brand: #1e2124;
+  --se-color-success: var(--se-success-500);
+  --se-color-warning: var(--se-orange-warning);
+  --se-color-danger: var(--se-red-hover);
+  --se-color-danger-hover: var(--se-red-base);
+  --se-color-info: var(--se-blue-ghost-border);
+  --se-color-bg: var(--brand-bg, var(--se-slate-950));
+  --se-color-surface: var(--se-slate-900);
+  --se-color-surface-variant: var(--se-slate-800);
+  --se-color-surface-muted: var(--se-slate-850);
+  --se-color-text: var(--brand-text, var(--se-gray-200));
+  --se-color-text-muted: var(--se-gray-500);
+  --se-color-text-subtle: var(--se-gray-600);
+  --se-color-text-disabled: var(--se-gray-700);
+  --se-color-border: var(--se-slate-550);
+  --se-color-border-strong: var(--se-gray-800);
+  --se-color-scrollbar-track: var(--se-slate-800);
+  --se-color-scrollbar-thumb: var(--se-slate-550);
+  --se-color-scrollbar-thumb-brand: var(--se-green-800);
+  --se-color-overlay: rgba(0, 0, 0, 0.66);
+  --se-color-overlay-soft: rgba(255, 255, 255, 0.08);
+  --se-color-hover: rgba(255, 255, 255, 0.06);
+  --se-color-drag-ghost: var(--se-slate-750);
+  --se-color-drag-ghost-border: var(--se-blue-ghost-border);
+  --se-color-footer-bg: var(--se-slate-950);
+  --se-color-footer-text: var(--se-gray-550);
+  --se-color-footer-divider: var(--se-slate-550);
+}

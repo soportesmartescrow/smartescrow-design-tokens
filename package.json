@@ -1,0 +1,40 @@
+{
+  "name": "@smartescrow/prontopago-design-tokens",
+  "version": "1.0.0",
+  "description": "Design tokens de Pronto Pago (--se-*): paleta slate+verde, tipografía Poppins, radios, sombras, espaciado, z-index, modo oscuro y tema Vuetify. Artefacto portable para reproducir la estética de Pronto Pago en cualquier plataforma.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "author": "SmartEscrow Team",
+  "keywords": ["design-tokens", "design-system", "css-variables", "vuetify", "prontopago", "smartescrow"],
+  "main": "./tokens.mjs",
+  "module": "./tokens.mjs",
+  "exports": {
+    ".": "./tokens.mjs",
+    "./css": "./tokens.css",
+    "./tokens.css": "./tokens.css",
+    "./vuetify": "./vuetify-theme.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "tokens.mjs",
+    "tokens.css",
+    "vuetify-theme.mjs",
+    "build-tokens.mjs",
+    "README.md"
+  ],
+  "sideEffects": ["*.css"],
+  "scripts": {
+    "build": "node build-tokens.mjs",
+    "prepare": "node build-tokens.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smartescrow/prontopago-design-tokens.git"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

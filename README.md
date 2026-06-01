@@ -1,0 +1,349 @@
+# Pronto Pago — Design Tokens
+
+Sistema de **design tokens** que nuclea en un solo lugar toda la estética de Pronto Pago
+(slate + verde, tipografía Poppins). Su objetivo: poder reproducir **exactamente** el mismo
+aspecto en cualquier sitio — la SPA Vue/Vuetify, las páginas Twig, EasyAdmin u otras
+plataformas — incluyendo **modo oscuro**.
+
+> Hermano de `public/css/se-tokens.css` (el design system **SmartEscrow** azul/lima + Geist,
+> usado por la landing y declarado *shared across all platforms* en `public/js/se-header.jsx`).
+> Comparten **arquitectura y naming `--se-*`**; cada uno aporta **sus propios valores de marca**.
+> Un componente escrito contra `var(--se-…)` se ve "ProntoPago" o "SmartEscrow" según qué archivo
+> de tokens cargue la página.
+
+---
+
+## 1. Arquitectura
+
+```
+assets/design-tokens/
+├── tokens.mjs          ← FUENTE DE VERDAD (ESM). Editar AQUÍ.
+├── build-tokens.mjs    ← Generador: tokens.mjs → tokens.css (node, sin deps)
+├── tokens.css          ← GENERADO. Artefacto portable (NO editar a mano)
+├── vuetify-theme.mjs   ← Construye los temas Vuetify light/dark desde tokens.mjs
+└── README.md           ← Este documento
+```
+
+Tres capas:
+
+1. **Primitivos** — la paleta cruda y las escalas (color, tipografía, radios, sombras,
+   espaciado, z-index). Valores literales. Ej. `--se-green-500: #87bd78`.
+2. **Semánticos** — el *propósito*, referencian primitivos y tienen variante **light/dark**.
+   Ej. `--se-color-brand`, `--se-color-surface`, `--se-color-text`. Es lo que se debe usar
+   en el 95 % de los casos.
+3. **Tema Vuetify** — mapea los semánticos a los nombres que Vuetify espera (`primary`,
+   `surface`, `success`…), resueltos a hex (Vuetify no admite `var()` en `colors`).
+
+### Flujo de generación
+
+```
+tokens.mjs ──(npm run build:tokens)──▶ tokens.css ──(css-loader / <link>)──▶ navegador
+     │
+     └──(import)──▶ vuetify-theme.mjs ──▶ createVuetify({ themes }) en app.js
+```
+
+`tokens.css` es la única fuente para el CSS; **nunca se edita a mano** (cabecera lo recuerda).
+
+---
+
+## 2. Cómo se consume hoy en este proyecto
+
+| Contexto | Cómo llegan los tokens |
+|---|---|
+| SPA Vue + `<style scoped>` | `base.scss` hace `@import '../design-tokens/tokens.css'` (css-loader lo inlina en el entry `style`). Las custom properties cascadean a los estilos *scoped*. |
+| Plantillas que heredan de `base.html.twig` (registro) | Cargan el entry `style` ⇒ tokens disponibles. |
+| Páginas Twig **standalone** (restablecer/cambiar contraseña) | `{{ encore_entry_link_tags('design-tokens') }}` en el `<head>`. |
+| Tema Vuetify (light + dark) | `app.js` importa `vuetify-theme.mjs`. |
+
+`webpack.config.js` emite además un artefacto autónomo:
+
+```js
+.addStyleEntry('design-tokens', './assets/design-tokens/tokens.css')
+// → public/build/design-tokens.css
+```
+
+Ese `design-tokens.css` es el **droppable portable**: un solo `<link>` y cualquier página
+obtiene la estética de Pronto Pago.
+
+---
+
+## 3. Uso
+
+### En SCSS / CSS / `<style>` de Vue
+```scss
+.mi-boton {
+  background: var(--se-color-brand);
+  color: var(--se-color-on-brand);
+  border-radius: var(--se-r-md);
+  box-shadow: var(--se-shadow-sm);
+}
+.mi-boton:hover { background: var(--se-color-brand-hover); }
+```
+> En `<style scoped>` funciona sin más: las custom properties **se heredan** aunque el scope
+> añada atributos `[data-v-…]`.
+
+### En Twig (página standalone)
+```twig
+<head>
+  {{ encore_entry_link_tags('design-tokens') }}
+  <style> .cta { background: var(--se-color-primary); color: var(--se-color-on-primary); } </style>
+</head>
+```
+
+### En JavaScript (p. ej. otro framework)
+```js
+import { primitives, semantic, tokenToHex } from './design-tokens/tokens.mjs';
+const brand = primitives.color.green[500];          // '#87bd78'
+const surface = tokenToHex(semantic.light['color-surface']); // '#ffffff'
+```
+
+---
+
+## 4. Modo oscuro
+
+Los tokens **semánticos** cambian de valor en oscuro; los **primitivos** no. Se activa de dos
+formas equivalentes:
+
+- **Vuetify** (la SPA): el tema `smartEscrowDarkTheme` aplica la clase
+  `.v-theme--smartEscrowDarkTheme` a la raíz de `<v-app>`, que dispara los overrides del CSS.
+  El botón flotante de `App.vue` (`toggleTheme`) alterna light/dark.
+- **Sin Vue** (EasyAdmin, HTML plano): añade el atributo al `<html>`:
+  ```html
+  <html data-se-theme="dark">
+  ```
+
+El bloque de overrides vive en `tokens.css`:
+```css
+.v-theme--smartEscrowDarkTheme,
+[data-se-theme="dark"] { /* --se-color-* re-definidos */ }
+```
+
+Como el código usa **semánticos**, el modo oscuro "simplemente funciona" sin tocar componentes.
+
+---
+
+## 5. Integración con el branding por tenant (SSO SDK)
+
+`base.html.twig` inyecta, por usuario, `--brand-primary`, `--brand-bg`, `--brand-text`
+(vía `get_branding()` del bundle `smartescrow/sso-sdk`). Los tokens de marca **los respetan**
+como override con *fallback*:
+
+```css
+--se-color-primary: var(--brand-primary, var(--se-slate-600));
+--se-color-bg:      var(--brand-bg,      var(--se-gray-50));
+--se-color-text:    var(--brand-text,    var(--se-slate-600));
+```
+
+⇒ Si el tenant define su color, manda; si no, se usa el de Pronto Pago. Nada que configurar.
+
+---
+
+## 6. Catálogo de tokens
+
+### Color · primitivos
+| Familia | Variables | Uso |
+|---|---|---|
+| Slate | `--se-slate-{500..950}` (`#36414f` = **600**, primario) | marca / superficies oscuras |
+| Verde | `--se-green-{50..900}` (`#87bd78` = **500** acción, `#8dc63f` = **400** CTA) | acento de marca |
+| Éxito | `--se-success-500` (`#64d26f`) | semántico de éxito |
+| Gris | `--se-gray-{0..950}` | neutros, texto, bordes, scroll |
+| Azul | `--se-blue-{info,link,bootstrap,ghost,ghost-border}` | informativos / drag |
+| Rojo | `--se-red-{text,base,hover}` | peligro |
+| Naranja | `--se-orange-warning` (`#ffa800`) | aviso |
+| Púrpura | `--se-purple-{secondary,darken,teal}` | secundario Vuetify |
+
+### Color · semánticos (light → dark)
+| Token | Light | Dark |
+|---|---|---|
+| `--se-color-primary` | slate-600 `#36414f` | slate-500 `#424242` |
+| `--se-color-on-primary` | `#ffffff` | `#ffffff` |
+| `--se-color-brand` | green-500 `#87bd78` | green-500 |
+| `--se-color-brand-hover` | green-650 `#6fb46a` | green-200 |
+| `--se-color-brand-strong` | green-400 `#8dc63f` | green-400 |
+| `--se-color-brand-subtle` | green-50 `#e5f3df` | slate-800 |
+| `--se-color-success / -warning / -danger / -info` | semánticos de estado | aclarados |
+| `--se-color-bg` | gray-50 `#f8f8f8` | slate-950 `#1e2124` |
+| `--se-color-surface` | `#ffffff` | slate-900 `#24282c` |
+| `--se-color-surface-variant` | gray-100 `#f5f5f5` | slate-800 |
+| `--se-color-text` | slate-600 | gray-200 |
+| `--se-color-text-muted` | gray-700 `#666` | gray-500 |
+| `--se-color-border` | gray-300 `#e0e0e0` | slate-550 |
+| `--se-color-scrollbar-{track,thumb,thumb-brand}` | gris/verde | slate/verde oscuro |
+| `--se-color-overlay / -overlay-soft / -hover` | washes negros | washes claros |
+| `--se-color-footer-{bg,text,divider}` | footer oscuro | footer oscuro |
+
+> Lista completa y exacta: ver `tokens.css` generado o `semantic` en `tokens.mjs`.
+
+### Estructura (mismo contrato que `se-tokens.css`)
+| Grupo | Variables | Valores ProntoPago |
+|---|---|---|
+| Tipografía | `--se-font-{sans,mono}` | `'Poppins', 'Roboto', system-ui` / mono |
+| Tamaño | `--se-text-{xs,sm,base,md,lg,xl,2xl,3xl}` | 0.8rem … 2rem |
+| Peso | `--se-weight-{regular,medium,bold}` | 400 / 500 / 700 |
+| Radio | `--se-r-{xs,sm,md,lg,full}` | 4 / 5 / **10** / 12 / 999 px |
+| Sombra | `--se-shadow-{sm,md,lg}` | sombras reales del proyecto |
+| Espaciado | `--se-s-{1..16}` | 4 px → 64 px |
+| z-index | `--se-z-{header,overlay,loader,loader-card,toast}` | capas reales |
+
+---
+
+## 7. Modificar tokens
+
+1. Edita **`tokens.mjs`** (único sitio).
+2. Regenera el CSS:
+   ```bash
+   npm run build:tokens          # o: node assets/design-tokens/build-tokens.mjs
+   ```
+3. Recompila los assets si procede:
+   ```bash
+   lando exec node_internal -- npm run build      # producción
+   lando exec node_internal -- npm run watch       # desarrollo
+   ```
+
+`tokens.css` está versionado en git para que el artefacto portable exista sin paso de build;
+**pero siempre debe regenerarse desde `tokens.mjs`** (no editarlo a mano).
+
+---
+
+## 8. El bundle (paquete npm)
+
+Esta carpeta **es** un paquete npm autónomo: `@smartescrow/prontopago-design-tokens`
+(ver `package.json`). Se puede publicar y consumir desde otros proyectos sin copiar nada a mano.
+
+**Contenido publicado** (campo `files`):
+
+| Archivo | Para qué |
+|---|---|
+| `tokens.css` | El artefacto portable (CSS custom properties + dark). Lo que usa cualquier plataforma. |
+| `tokens.mjs` | Fuente de verdad + API JS (`primitives`, `semantic`, `tokenToHex`…). |
+| `vuetify-theme.mjs` | Temas Vuetify light/dark listos. |
+| `build-tokens.mjs` | Generador (se ejecuta solo en `prepare`/`build`). |
+| `README.md` | Esta doc. |
+
+**Puntos de entrada** (campo `exports`):
+
+```js
+import { primitives, semantic } from '@smartescrow/prontopago-design-tokens';        // API JS
+import { smartEscrowTheme, smartEscrowDarkTheme } from '@smartescrow/prontopago-design-tokens/vuetify';
+import '@smartescrow/prontopago-design-tokens/css';                                   // = tokens.css
+```
+
+`tokens.css` se regenera automáticamente al instalar (script `prepare`), así que el consumidor
+siempre recibe un CSS coherente con `tokens.mjs`.
+
+---
+
+## 9. Publicar el bundle (subirlo)
+
+> **Recomendado:** repositorio Git en la org `github.com/smartescrow/`, igual que el resto de
+> paquetes SmartEscrow (el SSO SDK se distribuye así, vía VCS). No requiere registry npm.
+
+### Opción A · Repo Git propio (recomendado, alineado con el stack actual)
+
+Primera vez — extraer esta carpeta a su propio repo:
+```bash
+# 1) Crear el repo en GitHub: smartescrow/prontopago-design-tokens
+# 2) Sembrarlo con el contenido de esta carpeta
+cd assets/design-tokens
+git init && git add . && git commit -m "feat: design tokens Pronto Pago v1.0.0"
+git branch -M main
+git remote add origin git@github.com:smartescrow/prontopago-design-tokens.git
+git push -u origin main
+git tag v1.0.0 && git push --tags          # las versiones se referencian por tag
+```
+> Mantén `assets/design-tokens/` en este proyecto como fuente de verdad y sincroniza el repo del
+> paquete cuando cambien los tokens (o usa un `git subtree split`).
+
+### Opción B · Registry npm (si se habilita uno, p. ej. GitHub Packages)
+```bash
+cd assets/design-tokens
+# autenticarse en el registry (~/.npmrc con //npm.pkg.github.com/:_authToken=...)
+npm publish        # 'prepare' regenera tokens.css antes de empaquetar
+```
+`publishConfig.access` está en `restricted` (paquete privado). Cámbialo a `public` solo si procede.
+
+---
+
+## 10. Actualizar el bundle
+
+1. Edita **`tokens.mjs`** (único sitio).
+2. `npm run build:tokens` (regenera `tokens.css`).
+3. Sube la versión con **SemVer** y publica:
+   ```bash
+   cd assets/design-tokens
+   npm version patch   # 1.0.0 -> 1.0.1  (fix sin cambio visual)
+   # npm version minor # 1.1.0  (tokens nuevos, retrocompatibles)
+   # npm version major # 2.0.0  (renombrar/eliminar tokens: rompe consumidores)
+   git push && git push --tags        # (Opción A)  ó  npm publish  (Opción B)
+   ```
+   Regla SemVer para tokens: **añadir** token = minor; **renombrar/eliminar** = major;
+   cambiar un **valor** sin tocar nombres = patch o minor según impacto visual.
+4. En los proyectos consumidores: `npm update @smartescrow/prontopago-design-tokens`
+   (o fija el tag: `#v1.0.1`).
+
+---
+
+## 11. Instalar / aplicar en OTRO proyecto
+
+### Instalar
+```bash
+# Desde Git (Opción A) — fija siempre un tag:
+npm install github:smartescrow/prontopago-design-tokens#v1.0.0
+#   (equivalente SSH)  npm install git+ssh://git@github.com/smartescrow/prontopago-design-tokens.git#v1.0.0
+
+# Desde registry npm (Opción B):
+npm install @smartescrow/prontopago-design-tokens
+```
+
+### Caso 1 · Proyecto Vue + Vuetify
+```js
+import { createVuetify } from 'vuetify';
+import { smartEscrowTheme, smartEscrowDarkTheme, themeNames }
+  from '@smartescrow/prontopago-design-tokens/vuetify';
+import '@smartescrow/prontopago-design-tokens/css';   // define las --se-* (light + dark)
+
+export default createVuetify({
+  theme: {
+    defaultTheme: themeNames.light,
+    themes: { [themeNames.light]: smartEscrowTheme, [themeNames.dark]: smartEscrowDarkTheme },
+  },
+});
+```
+Luego, en tus estilos, usa `var(--se-color-*)`, `var(--se-r-*)`, etc.
+
+### Caso 2 · Proyecto sin JS / Symfony Twig / HTML plano
+Sirve el CSS y enlázalo en el `<head>`:
+```html
+<link rel="stylesheet" href="/path/a/node_modules/@smartescrow/prontopago-design-tokens/tokens.css">
+```
+o cópialo a tu carpeta pública / pásalo por tu bundler. Modo oscuro: `<html data-se-theme="dark">`.
+
+### Caso 3 · EasyAdmin (esta plataforma u otra)
+EasyAdmin usa variables Bootstrap (`--bs-*`). Añade el CSS de tokens + un pequeño **adaptador**
+que mapee Bootstrap → tokens, p. ej. en un `admin.css` cargado por el `DashboardController`
+(`configureAssets()->addCssFile(...)`):
+```css
+@import "@smartescrow/prontopago-design-tokens/tokens.css";
+:root {
+  --bs-primary:        var(--se-color-primary);
+  --bs-primary-rgb:    54, 65, 79;      /* #36414f */
+  --bs-body-bg:        var(--se-color-bg);
+  --bs-body-color:     var(--se-color-text);
+  --bs-border-color:   var(--se-color-border);
+  --bs-success:        var(--se-color-success);
+}
+```
+(Un preset/adaptador EasyAdmin completo está en la hoja de ruta, §12.)
+
+---
+
+## 12. Hoja de ruta
+
+- **Adaptadores** oficiales por entorno: EasyAdmin (`--bs-*`), Tailwind preset, SCSS map.
+- **Unificación** con `public/css/se-tokens.css`: extraer el contrato común de naming a un
+  paquete base (`@smartescrow/tokens-core`) y publicar cada identidad (prontopago, smartescrow)
+  como un *theme* intercambiable.
+- **Componentes**: la librería de clases (`.se-btn`, `.se-card`…) de `se-tokens.css` no está
+  portada aquí (la SPA usa Vuetify); valorar un set neutro compartido.
+- Tokenizar los pocos colores incidentales restantes (404 `NotFound.vue`, overlays
+  `rgba(0.7…)`, bordes blancos del footer) si se decide unificar también esos casos.
