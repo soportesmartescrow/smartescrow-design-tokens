@@ -155,7 +155,7 @@ a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); 
   position: absolute;
   left: 25%;
   right: 25%;
-  bottom: 0;
+  bottom: 8px;            /* hueco respecto al borde inferior (como Pronto Pago) */
   height: 2px;
   border-radius: 0;
   background: var(--se-navbar-active);
@@ -187,24 +187,24 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
 }
 .user-name, .dropdown-settings-button, span.user-name { color: var(--se-navbar-fg) !important; }
 
-/* Avatar de usuario: círculo de CONTORNO slate con icono slate (como mdi-account-circle de Pronto Pago) */
+/* Avatar de usuario: círculo RELLENO slate/casi-negro con persona en blanco hueso
+ * (como el mdi-account-circle de Pronto Pago). Sin contorno, pequeño. */
 .user-avatar {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50% !important;
-  background: transparent;
-  /* slate fijo del menú (NO --se-color-primary, que el branding del tenant pone verde) */
-  color: var(--se-navbar-fg);
-  border: 1.5px solid var(--se-navbar-fg);
+  background: var(--se-navbar-fg);   /* fondo oscuro fijo (no --se-color-primary, que el branding pone verde) */
+  color: var(--se-color-canvas);     /* persona en blanco hueso (#f8f8f8) */
+  border: 0 !important;
   overflow: hidden;
   flex: 0 0 auto;
 }
-.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-navbar-fg); }
-/* Si el usuario tiene logo/foto, se muestra rellenando el círculo (sin borde) */
-img.user-avatar { object-fit: cover; border: 0; background: var(--se-color-surface-variant); }
+.user-avatar svg, .user-avatar i { width: 15px; height: 15px; font-size: 14px; color: var(--se-color-canvas); }
+/* Si el usuario tiene logo/foto, rellena el círculo */
+img.user-avatar { object-fit: cover; }
 .user-details { display: inline-flex; align-items: center; gap: var(--se-s-2); color: var(--se-navbar-fg); }
 .dropdown-toggle.user-details { margin-left: 1.5rem !important; }
 span.user-name {

@@ -113,6 +113,20 @@ ${emitSemantic(semantic.light)}
 [data-bs-theme="dark"] {
 ${emitSemantic(semantic.dark)}
 }
+
+/* ============================================================
+ * Integraciones de terceros — estilo de marca consistente en TODAS
+ * las plataformas que cargan el design system.
+ * ------------------------------------------------------------
+ * Widget de chatbot (chatbot-widget-bundle): su botón flotante \`.cw-btn\`
+ * trae azul por defecto; lo forzamos al verde de marca + MAYÚSCULAS.
+ * ============================================================ */
+.cw-btn {
+  background: var(--${PREFIX}-color-brand) !important;
+  color: var(--${PREFIX}-color-on-brand) !important;
+  text-transform: uppercase !important;
+}
+.cw-btn:hover { background: var(--${PREFIX}-color-brand-hover) !important; }
 `;
 
 const out = join(__dirname, 'tokens.css');

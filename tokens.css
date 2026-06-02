@@ -285,3 +285,17 @@
   --se-color-footer-text: var(--se-gray-550);
   --se-color-footer-divider: var(--se-slate-550);
 }
+
+/* ============================================================
+ * Integraciones de terceros — estilo de marca consistente en TODAS
+ * las plataformas que cargan el design system.
+ * ------------------------------------------------------------
+ * Widget de chatbot (chatbot-widget-bundle): su botón flotante `.cw-btn`
+ * trae azul por defecto; lo forzamos al verde de marca + MAYÚSCULAS.
+ * ============================================================ */
+.cw-btn {
+  background: var(--se-color-brand) !important;
+  color: var(--se-color-on-brand) !important;
+  text-transform: uppercase !important;
+}
+.cw-btn:hover { background: var(--se-color-brand-hover) !important; }
