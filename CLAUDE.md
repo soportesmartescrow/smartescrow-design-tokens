@@ -171,15 +171,39 @@ PASOS
      (emite public/build/design-tokens.css para enlazarlo en plantillas Twig standalone) e importa el CSS en el entry JS.
      Si instalas como carpeta hermana con file:, añade  config.resolve.symlinks = false  (si no, Babel intenta inyectar core-js y falla el build).
    - PHP/Twig/HTML sin build: copia node_modules/@smartescrow/design-system/tokens.css a la carpeta pública y enlázalo con <link>. Dark con [data-se-theme="dark"].
-   - EasyAdmin (recomendado: FICHEROS ESTÁTICOS, sin WebpackEncoreBundle — en EA 4.24
-     `addWebpackEncoreEntry` puede no estar habilitado y/o escapar los tags):
-       1) Concatena en un CSS público `tokens.css + components.css + navbar.css + adapters/easyadmin.css`
-          (este reasigna --bs-* a tokens y themea Bootstrap) y cárgalo con `Assets->addCssFile(...)`.
-       2) Copia `navbar.global.js` (build clásica IIFE → window.SeNavbar) a public y cárgalo con
-          `addJsFile(...)`, seguido de un init clásico `SeNavbar.init({relocate,submenus,responsive})`
-          con los selectores de EasyAdmin. La lógica de negocio (fetches, modales) va aparte, en el proyecto.
-       3) Branding: el layout define `--brand-primary/bg/text` (los tokens los respetan).
-     Conserva SOLO el posicionamiento; el resto, tokens. (Ver wallet: bin/build-admin-assets.mjs.)
+   - EasyAdmin (EasyCorp 4.x + Bootstrap 5). USA FICHEROS ESTÁTICOS, NO WebpackEncoreBundle:
+     en EA 4.24 `addWebpackEncoreEntry` puede no estar habilitado (no-op) y/o ESCAPAR los <link>/<script>
+     (se ven como texto). Receta probada (ver wallet: `bin/build-admin-assets.mjs`, `DashboardController`):
+       1) BUNDLE CSS. Concatena, EN ESTE ORDEN, a un único CSS público (p.ej. public/css/se-admin.css):
+            fonts.css → tokens.css → components.css → navbar.css → adapters/easyadmin.css
+          · `fonts.css` VA PRIMERO (lleva @import de Poppins/Roboto/@mdi/font y los @import deben ir al
+            inicio de la hoja). EA NO trae esas fuentes/iconos locales, así que este paso es OBLIGATORIO
+            o el admin saldrá en system-ui y sin iconos MDI.
+          · `adapters/easyadmin.css` reasigna `--bs-*` → tokens (themea Bootstrap), mapea el DOM de EA
+            (`.main-header`, `.sidebar-wrapper`, `.main-menu`, `.main-menu-item`, `.form-control`, `.btn`,
+            `.main-footer`…) a `--se-*`, pinta navbar con `--se-navbar-*`, el avatar con `mdi-account-circle`,
+            el footer fiel a ProntoPago, el dark con `body.ea-dark-scheme {…}` y evita que una tabla ancha
+            rompa nav/footer (`body/.wrapper { overflow-x: clip }` + scroll interno en `.datagrid`).
+          Hazlo con un pequeño script Node (lee del paquete en node_modules y escribe a public/).
+       2) NAVBAR JS. Copia `navbar.global.js` (build IIFE → `window.SeNavbar`) a public (p.ej.
+          public/js/se-navbar.js).
+       3) CARGA + INIT en el Dashboard `configureAssets()` (aplica a todo el backend; un controller
+          standalone no-CRUD puede necesitar repetirlo). Orden EXACTO de los JS:
+            addCssFile('css/se-admin.css')
+            addJsFile('js/se-navbar.js')          // define window.SeNavbar
+            addJsFile('js/se-admin-init.js')      // llama SeNavbar.init({ relocate:[…selectores EA…] })
+            addJsFile('js/<tu-negocio>.js')       // fetches/modales/SSO — del proyecto, NO del kit
+          IMPORTANTE: con `relocate` mueves la sidebar de EA al header; deja `submenus`/`responsive`
+          al JS inline del layout si éste ya los maneja, para no duplicar el toggle (doble apertura).
+       4) FOOTER. Añade en el layout un `<footer class="main-footer"><div class="footer-content">` con
+          `.footer-links` (3 enlaces: privacidad/términos/contacto) y `.footer-copyright`; el adapter lo
+          estiliza igual que ProntoPago (dos filas, divisor, separadores "|").
+       5) BRANDING. En `layout.html.twig` define `--brand-primary/bg/text` desde tu `get_branding()`
+          (los tokens los respetan en LIGHT; en DARK se ignoran a propósito).
+       6) DARK. EA togglea el esquema añadiendo `ea-dark-scheme` al <body> (page-color-scheme.js nativo);
+          el adapter ya cubre ese selector. No necesitas más.
+     Conserva SOLO el posicionamiento sidebar→navbar; TODO lo visual (colores, sombras, radios, fuentes)
+     debe quedar en tokens. Objetivo: que el admin sea indistinguible de ProntoPago en light y dark.
    Después, centraliza los colores/medidas de marca hardcodeados del proyecto sustituyéndolos por var(--se-*) PRESERVANDO el aspecto. No toques estilos de librerías de terceros.
 4) ¿Faltan tokens? Si este proyecto usa colores/medidas de marca que NO existen en el sistema:
    a) Clona el repo del design system, LEE su CLAUDE.md y README §7 y respétalos.
