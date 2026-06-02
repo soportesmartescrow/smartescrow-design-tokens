@@ -24,6 +24,11 @@ instalar §11).
    exacto** (cero cambio visual; "preservar look").
 5. **No renombres ni elimines tokens a la ligera**: los consumidores dependen de los NOMBRES.
    Si lo haces, es **major** (ver §10 SemVer).
+6. **En DARK se ignora el branding por tenant.** `--brand-primary/bg/text` son colores de modo
+   CLARO (no conmutan); aplicarlos en dark rompe el contraste (texto oscuro sobre fondo oscuro).
+   Por eso en `semantic.dark` los tokens de texto/fondo/primario van **sin** `{ brand }`
+   (`color-text`, `color-bg`, `color-canvas`, `color-primary` usan valores oscuros del sistema).
+   El branding solo manda en LIGHT.
 
 ## Mapa del repo
 
@@ -32,7 +37,12 @@ instalar §11).
 - `build-tokens.mjs` — generador `tokens.mjs → tokens.css` (sin dependencias).
 - `vuetify-theme.mjs` — temas Vuetify `smartEscrowTheme` / `smartEscrowDarkTheme`
   (resuelve semánticos a hex; Vuetify no admite `var()`).
-- `tokens.css` — artefacto portable generado (`:root` light + bloque dark).
+- `tokens.css` — artefacto portable generado (`:root` light + bloque dark + override `.cw-btn` del
+  widget de chatbot). El bloque dark se dispara con `.v-theme--smartEscrowDarkTheme`,
+  `[data-se-theme="dark"]`, **`.ea-dark-scheme`** (EasyAdmin) y `[data-bs-theme="dark"]`.
+- `fonts.css` — `@import` de **Poppins + Roboto** (texto) y **`@mdi/font`** (iconos MDI) desde Google
+  Fonts/jsDelivr, para plataformas SIN las fuentes locales (EasyAdmin). La SPA NO lo necesita
+  (carga Poppins/Roboto/MDI localmente). Su `@import` debe ir al principio de la hoja.
 - `components.css` — componentes genéricos reutilizables (`.se-*`) sobre tokens. **A mano.**
 - `navbar.css` + `navbar.js` — patrón sidebar→navbar: CSS de posicionamiento + mecánica vanilla
   parametrizable (mover DOM, posicionar submenús, responsive). **Sin negocio ni fetch.**
@@ -74,19 +84,48 @@ SemVer para tokens: **añadir** = minor · **renombrar/eliminar** = major ·
 
 ## Consumidores (no romperlos)
 
-- **ProntoPago** lo usa como `"@smartescrow/design-system": "file:../design-tokens"`
-  (carpeta hermana) e importa `…/css` y `…/vuetify`. En CI/deploy se usa el **tag git**
-  (`github:soportesmartescrow/smartescrow-design-tokens#vX.Y.Z`).
-- Webpack del consumidor necesita `resolve.symlinks = false` cuando se instala con `file:`
-  (si no, Babel transpila el paquete e intenta inyectar core-js → falla el build).
-- Antes de publicar un cambio, pruébalo en un consumidor (README §7.4: `npm pack --dry-run`,
-  `npm link` o `npm install /ruta/al/repo`).
+- **ProntoPago** (Vue3+Vuetify): importa `…/css` y `…/vuetify`. **Dependencia por TAG git**
+  (`git+ssh://git@github.com/soportesmartescrow/smartescrow-design-tokens.git#vX.Y.Z`), NO `file:`.
+  → `file:` crea un symlink que se ROMPE dentro de contenedores (lando/docker) que no montan la
+  carpeta hermana (`@smartescrow/design-system → /design-tokens` inexistente) → "Cannot find module".
+  Con `file:` además hace falta `resolve.symlinks=false` en webpack (Babel + core-js).
+- **Wallet (EasyAdmin)**: hoy usa `file:../design-tokens` + `bin/build-admin-assets.mjs` que
+  concatena `fonts + tokens + components + navbar + adapters/easyadmin` en `public/css/se-admin.css`
+  (ese CSS estático se commitea y se sirve; para deploy/CI conviene pasarlo también a tag git).
+- **GOTCHA al subir de tag** (`#v1.2.x → #v1.2.y`): el `package-lock.json` del consumidor pinea el
+  COMMIT viejo y `npm install` lo reusa (2s, sin re-fetch). Para forzar:
+  `npm cache clean --force && rm -rf node_modules/@smartescrow && npm install "git+ssh://…#vNUEVO" --force`.
+- Antes de publicar un cambio, pruébalo en un consumidor (`npm pack --dry-run`, `npm link`, etc.).
 
 ## Importante
 
-- No añadas dependencias de runtime: el generador debe seguir funcionando con Node puro
-  (`engines.node >= 18`). El script `prepare` regenera `tokens.css` al instalar.
+- **NO hay script `prepare`** (se quitó): regeneraba `tokens.css` al instalar y, con la caché git de
+  npm, a veces servía una versión desfasada. El install usa el `tokens.css` **commiteado** → por eso
+  la Regla de oro #2: regenera (`npm run build`) y commitea `tokens.css` SIEMPRE.
+- No añadas dependencias de runtime: el generador funciona con Node puro (`engines.node >= 18`).
 - `files` en `package.json` controla qué se publica; si añades archivos a distribuir, inclúyelos.
+
+## EasyAdmin · lecciones (detalle en README §12)
+
+- **Carga por ficheros estáticos**, NO `addWebpackEncoreEntry`: en EA 4.24 el bundle Encore puede
+  no estar habilitado (no-op silencioso) y, habilitado, **escapa los tags**. Se usa
+  `Assets::addCssFile/addJsFile` con ficheros en `public/` (lo que SIEMPRE renderiza bien).
+- **Mismo chain en TODOS los dashboards/controllers** (p. ej. `TransferController`), no solo el
+  principal, o esas páginas quedan sin estilos.
+- **Dark** = clase `.ea-dark-scheme` en `<body>` (la pone `page-color-scheme.js`). El adaptador la
+  re-asegura sobre `--bs-*` y fuerza navbar/cards/texto oscuros. Recordar: dark ignora branding
+  (Regla de oro #6); sin eso el texto sale ilegible (color del tenant es de modo claro).
+- **Fuentes en EA**: el token ya es Poppins, pero EA no la cargaba → `system-ui`. Se carga vía
+  `fonts.css` (concatenado primero en `se-admin.css`) + `--bs-body-font-family: var(--se-font-sans)`.
+- **Iconos**: ProntoPago usa **MDI** (`mdi-*` vía Vuetify); EA usa Font Awesome. Para igualar el
+  avatar de usuario se carga MDI y se pinta `mdi-account-circle` (`\F0009`) con CSS sobre
+  `.user-details::before` (EA `configureUserMenu` solo permite `setAvatarUrl`=imagen, no iconos).
+- **Inputs/botones**: los valores se copiaron de **Vuetify real** (`node_modules/vuetify/lib/
+  components/VField|VBtn/*.css`): input borde 1px translúcido (`--se-color-input-border`) + foco
+  primary; botón `letter-spacing:0.0892857143em`, peso 500. El label flotante con *notch* de
+  `v-field` NO se replica (estructura `fieldset/legend`; riesgoso en todos los tipos de campo de EA).
+- **Branding del layout**: define `--brand-primary/bg/text` (no `--sidebar-bg` etc.); el adaptador
+  mapea las legacy a tokens. Logo: acotar tamaño (venía con `height` inline grande).
 
 ---
 
@@ -104,10 +143,13 @@ DATOS
 - Repo del design system: https://github.com/soportesmartescrow/smartescrow-design-tokens
 - Paquete npm: @smartescrow/design-system  (es npm/CSS, NO Composer → va a node_modules, no a vendor)
 - Prefijo de tokens: --se-   (ej. var(--se-color-primary), var(--se-color-brand), var(--se-r-md), var(--se-shadow-sm))
-- Modo oscuro: clase .v-theme--smartEscrowDarkTheme (Vuetify) o atributo [data-se-theme="dark"] en <html>
-- Branding por tenant: los tokens de marca respetan var(--brand-primary|bg|text) si existen, con fallback
-- Entradas (exports): "." (API JS tokens), "/css" (tokens.css), "/components" (clases .se-*),
-  "/navbar.css" + "/navbar.js" (patrón sidebar→navbar), "/easyadmin" (adaptador EasyAdmin), "/vuetify" (temas)
+- Modo oscuro: .v-theme--smartEscrowDarkTheme (Vuetify), [data-se-theme="dark"], .ea-dark-scheme (EasyAdmin)
+  o [data-bs-theme="dark"]. En DARK se IGNORA el branding (es de modo claro): texto/fondo usan los valores oscuros.
+- Branding por tenant (solo LIGHT): los tokens de marca respetan var(--brand-primary|bg|text) con fallback.
+- Fuente Poppins + Roboto; iconos MDI (mismos que Vuetify). Si la plataforma no los carga localmente,
+  usa el export "/fonts" (fonts.css: @import de Poppins/Roboto/@mdi/font) — necesario en EasyAdmin.
+- Entradas (exports): "." (API JS), "/css" (tokens.css), "/fonts" (fuentes+MDI), "/components" (.se-*),
+  "/navbar.css"+"/navbar.js"+"/navbar.global.js"+"/navbar.html", "/easyadmin" (adaptador), "/vuetify" (temas)
 - Reglas para editar tokens: ver CLAUDE.md y README §7 DENTRO del repo del design system
 
 OBJETIVO

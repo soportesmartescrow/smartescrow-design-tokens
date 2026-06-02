@@ -101,22 +101,25 @@ const surface = tokenToHex(semantic.light['color-surface']); // '#ffffff'
 
 ## 4. Modo oscuro
 
-Los tokens **semánticos** cambian de valor en oscuro; los **primitivos** no. Se activa de dos
-formas equivalentes:
+Los tokens **semánticos** cambian de valor en oscuro; los **primitivos** no. El bloque de overrides
+de `tokens.css` se dispara con el indicador de dark de **cada plataforma** (así el dark es idéntico
+en todas):
 
-- **Vuetify** (la SPA): el tema `smartEscrowDarkTheme` aplica la clase
-  `.v-theme--smartEscrowDarkTheme` a la raíz de `<v-app>`, que dispara los overrides del CSS.
-  El botón flotante de `App.vue` (`toggleTheme`) alterna light/dark.
-- **Sin Vue** (EasyAdmin, HTML plano): añade el atributo al `<html>`:
-  ```html
-  <html data-se-theme="dark">
-  ```
-
-El bloque de overrides vive en `tokens.css`:
 ```css
-.v-theme--smartEscrowDarkTheme,
-[data-se-theme="dark"] { /* --se-color-* re-definidos */ }
+.v-theme--smartEscrowDarkTheme,   /* Vuetify (SPA): lo pone el tema en la raíz de <v-app> */
+[data-se-theme="dark"],           /* manual / HTML plano (atributo en <html>) */
+.ea-dark-scheme,                  /* EasyAdmin: clase en <body> (la pone page-color-scheme.js) */
+[data-bs-theme="dark"] {          /* Bootstrap 5.3 */
+  /* --se-color-* re-definidos a valores oscuros */
+}
 ```
+
+- **SPA**: el botón flotante de `App.vue` (`toggleTheme`) alterna light/dark.
+- **EasyAdmin**: el toggle nativo (sun/moon) pone `.ea-dark-scheme`; el adaptador lo cubre.
+
+> ⚠️ **En DARK se IGNORA el branding** (ver §5): `--brand-*` son colores de modo claro y no
+> conmutan; aplicarlos en dark deja texto oscuro sobre fondo oscuro. Por eso `color-text/bg/canvas/
+> primary` usan en dark los valores oscuros del sistema, **sin** `var(--brand-*)`.
 
 Como el código usa **semánticos**, el modo oscuro "simplemente funciona" sin tocar componentes.
 
@@ -135,6 +138,10 @@ como override con *fallback*:
 ```
 
 ⇒ Si el tenant define su color, manda; si no, se usa el de Pronto Pago. Nada que configurar.
+
+> **Solo en LIGHT.** En modo oscuro el branding se ignora (los `--brand-*` son colores claros que
+> romperían el contraste): los tokens de texto/fondo/primario usan los valores oscuros del sistema
+> (ver §4). El layout del consumidor debe definir `--brand-primary/bg/text` (no las vars legacy).
 
 ---
 
@@ -305,13 +312,14 @@ Esta carpeta **es** un paquete npm autónomo: `@smartescrow/design-system`
 
 | Archivo | Para qué |
 |---|---|
-| `tokens.css` | Artefacto portable de tokens (CSS custom properties + dark). Base de todo. |
+| `tokens.css` | Artefacto portable de tokens (CSS custom properties + dark + override `.cw-btn` del chatbot). Base de todo. |
 | `tokens.mjs` | Fuente de verdad + API JS (`primitives`, `semantic`, `tokenToHex`…). |
+| `fonts.css` | `@import` de **Poppins + Roboto** (texto) y **`@mdi/font`** (iconos MDI), para plataformas sin las fuentes locales (EasyAdmin). |
 | `components.css` | **Componentes** genéricos reutilizables (`.se-btn/.se-card/.se-table/.se-badge/.se-input/.se-search/.se-submenu/.se-modal…`) sobre tokens. |
-| `navbar.css` + `navbar.js` | **Navbar** (patrón sidebar→header horizontal): posicionamiento + mecánica vanilla (mover DOM, posicionar submenús, responsive). Sin negocio. |
-| `adapters/easyadmin.css` | **Adaptador EasyAdmin**: mapea Bootstrap `--bs-*` y los selectores nativos de EasyAdmin a tokens/componentes + navbar. |
+| `navbar.css` + `navbar.js` (+ `navbar.global.js`, `navbar.html`) | **Navbar** (patrón sidebar→header): posicionamiento + mecánica vanilla. Sin negocio. |
+| `adapters/easyadmin.css` | **Adaptador EasyAdmin**: mapea Bootstrap `--bs-*` y los selectores nativos a tokens/componentes + navbar (incl. dark, fuentes, avatar MDI, inputs/botones Vuetify). |
 | `vuetify-theme.mjs` | Temas Vuetify light/dark listos. |
-| `build-tokens.mjs` | Generador (se ejecuta solo en `prepare`/`build`). |
+| `build-tokens.mjs` | Generador `tokens.mjs → tokens.css`. |
 
 **Puntos de entrada** (campo `exports`):
 
@@ -319,13 +327,15 @@ Esta carpeta **es** un paquete npm autónomo: `@smartescrow/design-system`
 import { primitives, semantic } from '@smartescrow/design-system';            // API JS de tokens
 import { smartEscrowTheme, smartEscrowDarkTheme } from '@smartescrow/design-system/vuetify';
 import '@smartescrow/design-system/css';            // tokens.css (base, siempre primero)
+import '@smartescrow/design-system/fonts';          // Poppins + Roboto + MDI (plataformas sin fuentes locales)
 import '@smartescrow/design-system/components';     // clases .se-* (botones, tablas, badges…)
 import '@smartescrow/design-system/navbar.css';     // posicionamiento de la navbar
 import { initNavbar } from '@smartescrow/design-system/navbar.js'; // mecánica navbar
 import '@smartescrow/design-system/easyadmin';      // adaptador EasyAdmin (themea Bootstrap)
 ```
 
-`tokens.css` se regenera automáticamente al instalar (script `prepare`).
+> `tokens.css` va **commiteado** y se usa tal cual al instalar (no hay script `prepare`; regenéralo
+> con `npm run build` tras editar `tokens.mjs` y commitéalo).
 
 ### Componentes, navbar y adaptadores (reutilizables por cualquier sistema)
 
@@ -470,7 +480,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = join(root, 'node_modules', '@smartescrow', 'design-system');
-const css = ['tokens.css', 'components.css', 'navbar.css', 'adapters/easyadmin.css']
+const css = ['fonts.css', 'tokens.css', 'components.css', 'navbar.css', 'adapters/easyadmin.css']
   .map(f => `/* ${f} */\n` + readFileSync(join(pkg, f), 'utf8')).join('\n\n');
 mkdirSync(join(root, 'public/css'), { recursive: true });
 writeFileSync(join(root, 'public/css/se-admin.css'), css);
@@ -478,11 +488,13 @@ mkdirSync(join(root, 'public/js'), { recursive: true });
 copyFileSync(join(pkg, 'navbar.global.js'), join(root, 'public/js/se-navbar.js'));
 ```
 Ejecuta `node bin/build-admin-assets.mjs`. Produce:
-- `public/css/se-admin.css` — tokens + componentes + navbar + adaptador EasyAdmin (todo en uno).
+- `public/css/se-admin.css` — fuentes + tokens + componentes + navbar + adaptador EasyAdmin (todo en uno).
 - `public/js/se-navbar.js` — la mecánica de navbar (build clásica IIFE → `window.SeNavbar`).
 
-> El **orden de concatenación importa**: `tokens.css` primero (define las `--se-*`).
-> Re-ejecuta el script cada vez que actualices el paquete.
+> El **orden importa**: `fonts.css` **primero** (su `@import` de fuentes debe ir al principio de la
+> hoja), luego `tokens.css` (define las `--se-*`). Re-ejecuta el script al actualizar el paquete
+> (añádelo como `npm run build:admin`). `fonts.css` carga Poppins + Roboto + **MDI** en EA (que por
+> defecto solo trae Font Awesome) → así la tipografía y los iconos coinciden con ProntoPago.
 
 **3) Init de la navbar** — `public/js/se-admin-init.js` (clásico, tras `se-navbar.js`). Pásale los
 selectores nativos de EasyAdmin de tu layout:
@@ -560,13 +572,31 @@ no toques `components.css`/`navbar.*`, que son agnósticos.
 - **Caché del navegador:** los ficheros estáticos **no llevan hash**; tras regenerarlos haz
   **hard refresh** (Ctrl+Shift+R). En producción, versiónalos por ruta/cabeceras si necesitas
   *cache busting* agresivo.
-- **Dark mode:** añade `data-se-theme="dark"` al `<html>` (los tokens semánticos hacen el resto).
-- **Branding por tenant:** ya cubierto con `--brand-*` (§5). El navbar/primario = `primary_color`.
-- **WebpackEncoreBundle (alternativa):** si tu proyecto SÍ lo tiene habilitado y funcionando,
-  puedes en su lugar crear un entry Encore que importe `…/css`,`…/components`,`…/navbar.css`,
-  `…/easyadmin` + `import { initNavbar } from '…/navbar.js'`, y cargarlo con
-  `addWebpackEncoreEntry('admin')`. Verifica antes que `encore_entry_link_tags('admin')` renderiza
-  tags reales (no escapados). Ante la duda, usa ficheros estáticos.
+- **Dark mode (EA):** el toggle nativo pone `.ea-dark-scheme` en `<body>` y el adaptador lo cubre.
+  Recuerda: en dark se ignora el branding (§4/§5) — si no, los textos salen oscuros sobre oscuro.
+- **Branding por tenant (solo light):** el layout define `--brand-primary/bg/text` (no las legacy
+  `--sidebar-bg` etc., que el adaptador mapea a tokens).
+- **Dependencia en contenedores (lando/docker):** usa el **tag git**
+  (`git+ssh://…#vX.Y.Z`), NO `file:` — el symlink de `file:` apunta fuera del contenedor y rompe el
+  build ("Cannot find module"). Al subir de tag, fuerza el re-fetch (el lock pinea el commit viejo):
+  `npm cache clean --force && rm -rf node_modules/@smartescrow && npm install "git+ssh://…#vNUEVO" --force`.
+- **WebpackEncoreBundle (alternativa):** solo si tu proyecto lo tiene habilitado y funcionando;
+  verifica que `encore_entry_link_tags('admin')` renderiza tags reales (no escapados). Ante la duda,
+  ficheros estáticos.
+
+### 12.6 Paridad fina con la SPA (fuentes, iconos, inputs)
+
+- **Fuentes:** el token ya es Poppins, pero EA no la trae → cárgala con `fonts.css` (Poppins +
+  Roboto, §12.2) y `--bs-body-font-family: var(--se-font-sans)` (Bootstrap 5).
+- **Iconos:** ProntoPago usa **MDI** (`mdi-*` vía Vuetify); EA usa Font Awesome. `fonts.css` carga
+  también `@mdi/font`. El avatar del user menu (EA solo permite `setAvatarUrl`=imagen) se pinta como
+  `mdi-account-circle` (`\F0009`) vía `.user-details::before` con `font-family:'Material Design Icons'`
+  y color `--se-navbar-fg`. Para igualar los iconos del menú, usa clases `mdi mdi-*` en
+  `configureMenuItems` (en vez de `fa fa-*`).
+- **Inputs/botones:** los valores salen de **Vuetify real** (`node_modules/vuetify/lib/components/
+  VField|VBtn/*.css`): input borde 1px translúcido (`--se-color-input-border`) + foco primary; botón
+  `letter-spacing: 0.0892857143em`, peso 500, uppercase. El label flotante "con notch" de `v-field`
+  no se replica por CSS sin riesgo en todos los tipos de campo de EA.
 
 ### 12.5 Troubleshooting
 
@@ -577,6 +607,10 @@ no toques `components.css`/`navbar.*`, que son agnósticos.
 | Navbar sin reubicar usuario/búsqueda | `se-navbar.js`/init no cargó o selectores no coinciden | Revisa orden de `addJsFile` y los selectores de `relocate` |
 | Submenús mal posicionados | falta el init o `submenus.item/panel` no coincide | Ajusta selectores en el init |
 | Colores no son los del tenant | branding no inyectado | Define `--brand-*` en el layout (§12.2 paso 6) |
+| **Texto ilegible en DARK** (oscuro sobre oscuro) | tokens de texto/fondo respetaban `--brand-*` (color de light) | En `semantic.dark` quita `{ brand }` de `color-text/bg/canvas/primary` (§4) |
+| **Fuente en `system-ui`**, no Poppins | EA no carga Poppins | Añade `fonts.css` (§12.2) + `--bs-body-font-family` |
+| `Cannot find module '@smartescrow/design-system/...'` al compilar en lando/docker | dependencia `file:` (symlink fuera del contenedor) | Usa el **tag git** (§12.4) |
+| `npm install` no trae el tag nuevo (2s, sin cambios) | `package-lock` pinea el commit viejo | `npm cache clean --force` + reinstalar `--force` (§12.4) |
 
 ---
 
@@ -636,11 +670,12 @@ El **modo oscuro global** ya trae sus propios valores `--se-navbar-*` (vía `[da
 | **Iconos** (EasyAdmin) | **Font Awesome 6.4.0** | clases `fa fa-*` / `fa-solid` |
 | Fondo navbar | blanco / dark slate | `--se-navbar-bg` |
 | Texto e iconos del menú | slate / claro en dark | `--se-navbar-fg` |
-| Indicador activo (subrayado) | corto, **2px**, **cuadrado**; slate (light) / verde (dark) | `--se-navbar-active` |
+| Indicador activo (subrayado) | corto (25%/25%), **2px**, **cuadrado**, separado del borde (`bottom:8px`); slate (light) / verde (dark) | `--se-navbar-active` |
 | Hover de ítem | wash sutil | `--se-navbar-hover` |
 | Borde inferior | gris / slate | `--se-navbar-border` |
-| Sombra bajo la navbar | ≈ elevation 1 | `--se-navbar-shadow` |
-| Scroll horizontal | línea fina oscura (4px) | `--se-navbar-scrollbar` |
+| Sombra bajo la navbar | Material **elevation 1** (3 capas) — copiada de `v-app-bar elevation="1"` | `--se-navbar-shadow` |
+| Scroll horizontal | **oculto** (`scrollbar-width:none`) para no tapar el indicador activo | `--se-navbar-scrollbar` (definido por si se quiere mostrar) |
+| Icono de usuario | **`mdi-account-circle`** (MDI), color `--se-navbar-fg`, 24px — idéntico al `v-icon` de ProntoPago | requiere `fonts.css` (MDI) |
 | Alto | 62px | `--se-size-navbar` |
 | Acento de marca (botones/CTA) | verde `#87bd78` | `--se-color-brand` |
 | Primario (slate) | `#36414f` | `--se-color-primary` |
