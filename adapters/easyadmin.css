@@ -174,6 +174,7 @@ a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); 
 /* Ocultar/mover piezas nativas de EasyAdmin */
 .header-right { display: none !important; }
 .toggle-sidebar { display: none !important; }   /* burger nativo de EA: inútil con sidebar→navbar */
+.responsive-header { display: none !important; } /* 2ª nav responsive nativa de EA: no sirve aquí */
 .content-top.ea-search-enabled, .content-top.ea-search-disabled { display: none !important; }
 body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > div > a { display: none !important; }
 .admin-options-gg {
@@ -197,8 +198,8 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
   width: 26px;
   height: 26px;
   border-radius: 50% !important;
-  background: var(--se-navbar-fg);   /* fondo oscuro fijo (no --se-color-primary, que el branding pone verde) */
-  color: var(--se-color-canvas);     /* persona en blanco hueso (#f8f8f8) */
+  background: var(--se-navbar-fg) !important;  /* mismo gris oscuro que los iconos del menú */
+  color: var(--se-color-canvas) !important;    /* persona en blanco hueso (#f8f8f8) */
   border: 0 !important;
   overflow: hidden;
   flex: 0 0 auto;
@@ -452,6 +453,17 @@ div.form-widget a.content-search-reset { display: none; }
   .toggle-sidebar { display: none !important; }   /* ocultar burger nativo de EA (3 líneas, solo hacía shadow) */
   .three-dots-menu { display: flex; }
   .custom-mobile-menu { display: block; }
+  /* Email de usuario en móvil: truncar con elipsis (queda muy largo) */
+  .admin-options-gg .user-name,
+  .admin-options-gg span.user-name,
+  .user-details .user-name,
+  span.user-name {
+    max-width: 110px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   /* El <ul class="main-menu"> del móvil hereda la regla horizontal del nav de escritorio;
      hay que devolverlo a columna y SIN clipear a 62px (si no, solo se ve el primer ítem). */
   .custom-mobile-menu .main-menu {
@@ -508,11 +520,48 @@ body.ea-dark-scheme {
   --bs-secondary-bg: var(--se-color-surface);
   --bs-tertiary-bg: var(--se-color-surface-variant);
   --bs-emphasis-color: var(--se-color-text);
+  --bs-heading-color: var(--se-color-text);
   background: var(--se-color-canvas) !important;
   color: var(--se-color-text);
 }
+
+/* Navbar oscura (forzada con primitivos slate, para que no se quede clara) */
+.ea-dark-scheme .sidebar-wrapper,
+.ea-dark-scheme .main-header { background: var(--se-slate-900) !important; color: var(--se-gray-200) !important; border-bottom-color: var(--se-slate-550) !important; }
+.ea-dark-scheme .main-menu-item a,
+.ea-dark-scheme a.menu-item-contents,
+.ea-dark-scheme .menu-item-label,
+.ea-dark-scheme .menu-icon,
+.ea-dark-scheme .user-name,
+.ea-dark-scheme span.user-name,
+.ea-dark-scheme .dropdown-settings-button { color: var(--se-gray-200) !important; }
+.ea-dark-scheme .user-avatar { background: var(--se-gray-200) !important; color: var(--se-slate-950) !important; }
+
+/* Superficies oscuras + TEXTO legible (claro) — cubre cards Bootstrap y su contenido */
 .ea-dark-scheme .card,
+.ea-dark-scheme .card-body,
+.ea-dark-scheme .card-header { background-color: var(--se-color-surface) !important; border-color: var(--se-color-border) !important; }
+.ea-dark-scheme .card,
+.ea-dark-scheme .card-body,
+.ea-dark-scheme .card-header,
+.ea-dark-scheme .card-title,
+.ea-dark-scheme .card-text,
+.ea-dark-scheme h1, .ea-dark-scheme h2, .ea-dark-scheme h3,
+.ea-dark-scheme h4, .ea-dark-scheme h5, .ea-dark-scheme h6,
+.ea-dark-scheme p, .ea-dark-scheme label, .ea-dark-scheme li,
+.ea-dark-scheme .content-header-title,
+.ea-dark-scheme .page-title { color: var(--se-color-text) !important; }
+.ea-dark-scheme .text-muted, .ea-dark-scheme small { color: var(--se-color-text-muted) !important; }
+
+/* Cabecera de contenido / título de página: sin fondo negro, usar canvas */
+.ea-dark-scheme .content-header,
+.ea-dark-scheme .content-title,
+.ea-dark-scheme .content,
+.ea-dark-scheme #main { background: var(--se-color-canvas) !important; }
+
+/* Tablas / inputs en dark */
 .ea-dark-scheme .table,
 .ea-dark-scheme .form-control,
-.ea-dark-scheme .form-select { background-color: var(--se-color-surface); color: var(--se-color-text); }
-.ea-dark-scheme .table thead th { background: var(--se-color-table-header-bg); color: var(--se-color-table-header-text); }
+.ea-dark-scheme .form-select { background-color: var(--se-color-surface) !important; color: var(--se-color-text) !important; }
+.ea-dark-scheme .table thead th { background: var(--se-color-table-header-bg) !important; color: var(--se-color-table-header-text) !important; }
+.ea-dark-scheme .table tbody td { color: var(--se-color-text) !important; border-color: var(--se-color-border) !important; }
