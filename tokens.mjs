@@ -192,7 +192,7 @@ export const semantic = {
     'color-on-success':     raw('#ffffff'),
     'color-warning-subtle': ref('orange.subtle'),
     'color-warning-strong': ref('orange.strong'),
-    'color-on-warning':     raw('#1e2124'),
+    'color-on-warning':     ref('slate.950'),
     'color-danger-subtle':  ref('red.subtle'),
     'color-danger-strong':  ref('red.strong'),
     'color-on-danger':      raw('#ffffff'),
@@ -218,6 +218,9 @@ export const semantic = {
 
     /* Superficies / texto / bordes */
     'color-bg':             ref('gray.50', { brand: 'bg' }),
+    /* Canvas = fondo de página FIJO (gris claro), NO override de branding: así la
+     * navbar/cards blancas contrastan, igual que el background de ProntoPago (Vuetify). */
+    'color-canvas':         ref('gray.50'),
     'color-surface':        ref('gray.0'),
     'color-surface-variant':ref('gray.100'),
     'color-surface-muted':  ref('gray.200'),
@@ -259,7 +262,7 @@ export const semantic = {
     'color-brand-strong':   ref('green.400'),
     'color-brand-strong-hover': ref('green.300'),
     'color-brand-subtle':   ref('slate.800'),
-    'color-on-brand':       raw('#1e2124'),
+    'color-on-brand':       ref('slate.950'),
 
     'color-success':        ref('success.500'),
     'color-warning':        ref('orange.warning'),
@@ -269,16 +272,16 @@ export const semantic = {
 
     'color-success-subtle': ref('slate.800'),
     'color-success-strong': ref('success.500'),
-    'color-on-success':     raw('#1e2124'),
+    'color-on-success':     ref('slate.950'),
     'color-warning-subtle': ref('slate.800'),
     'color-warning-strong': ref('orange.warning'),
-    'color-on-warning':     raw('#1e2124'),
+    'color-on-warning':     ref('slate.950'),
     'color-danger-subtle':  ref('slate.800'),
     'color-danger-strong':  ref('red.hover'),
     'color-on-danger':      raw('#ffffff'),
     'color-info-subtle':    ref('slate.800'),
     'color-info-strong':    ref('blue.ghost-border'),
-    'color-on-info':        raw('#1e2124'),
+    'color-on-info':        ref('slate.950'),
 
     'color-focus-ring':     raw('rgba(135, 189, 120, 0.45)'),
     'color-table-header-bg':   ref('slate.800'),
@@ -295,12 +298,13 @@ export const semantic = {
     'navbar-brand':         ref('green.500'),
 
     'color-bg':             ref('slate.950', { brand: 'bg' }),
+    'color-canvas':         ref('slate.950'),
     'color-surface':        ref('slate.900'),
     'color-surface-variant':ref('slate.800'),
     'color-surface-muted':  ref('slate.850'),
     'color-text':           ref('gray.200', { brand: 'text' }),
-    'color-text-muted':     ref('gray.500'),
-    'color-text-subtle':    ref('gray.600'),
+    'color-text-muted':     ref('gray.400'),   // dark: más claro que subtle (jerarquía)
+    'color-text-subtle':    ref('gray.500'),   // dark: ~4.6:1 sobre surface (AA)
     'color-text-disabled':  ref('gray.700'),
     'color-border':         ref('slate.550'),
     'color-border-strong':  ref('gray.800'),

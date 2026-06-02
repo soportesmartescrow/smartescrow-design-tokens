@@ -26,13 +26,14 @@
 :root {
   /* Bootstrap 5 (themea todos los componentes nativos de golpe) */
   --bs-primary: var(--se-color-primary);
-  --bs-primary-rgb: 54, 65, 79;          /* #36414f */
+  /* Respeta el branding del tenant si el SSO SDK inyecta --brand-primary-rgb; si no, slate #36414f */
+  --bs-primary-rgb: var(--brand-primary-rgb, 54, 65, 79);
   --bs-secondary: var(--se-color-brand);
   --bs-success: var(--se-color-success);
   --bs-warning: var(--se-color-warning);
   --bs-danger: var(--se-color-danger);
   --bs-info: var(--se-color-info);
-  --bs-body-bg: var(--se-color-bg);
+  --bs-body-bg: var(--se-color-canvas);
   --bs-body-color: var(--se-color-text);
   --bs-border-color: var(--se-color-border);
   --bs-border-radius: var(--se-r-sm);
@@ -47,7 +48,7 @@
   --button-success-bg: var(--se-color-brand);
   --text-color: var(--se-navbar-fg);
   --text-muted: var(--se-color-text-muted);
-  --body-bg: var(--se-color-bg);
+  --body-bg: var(--se-color-canvas);
   --sidebar-menu-color: var(--se-navbar-fg);
   --sidebar-menu-item-hover-bg: var(--se-navbar-hover);
   --sidebar-menu-active-item-color: var(--se-navbar-active);
@@ -59,7 +60,20 @@
   --box-shadow: var(--se-shadow-sm);
 }
 
-body { font-family: var(--se-font-sans); color: var(--se-color-text); }
+/* Tipografía Poppins y FONDO gris claro (Pronto Pago NO usa blanco puro; las superficies/cards
+ * sí son blancas). En dark, --se-color-bg es slate oscuro (tampoco negro puro). */
+body, button, input, select, textarea, .btn, .form-control, .main-content {
+  font-family: var(--se-font-sans);
+}
+body { color: var(--se-color-text); }
+body,
+.wrapper,
+.main-content,
+.content-wrapper,
+article.content,
+.content,
+.ea-content,
+#main { background: var(--se-color-canvas) !important; }
 
 /* ------------------------------------------------------------------
  * 1. Transformación sidebar → navbar (POSICIONAMIENTO, conservado)
@@ -110,7 +124,7 @@ nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; 
 .main-menu, .main-menu-wrapper .main-menu {
   display: flex !important;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;   /* desde la izquierda: así no se cortan los primeros ítems (INICIO) */
   width: 100%;
   height: var(--se-size-navbar);
   margin: 0;
@@ -173,6 +187,23 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
   font-weight: var(--se-weight-medium);
 }
 .user-name, .dropdown-settings-button, span.user-name { color: var(--se-navbar-fg) !important; }
+
+/* Avatar de usuario: círculo slate con icono blanco (como en Pronto Pago) */
+.user-avatar {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  background: var(--se-color-primary);
+  color: var(--se-color-on-primary);
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-color-on-primary); }
+img.user-avatar { object-fit: cover; }
+.user-details { display: inline-flex; align-items: center; gap: var(--se-s-2); color: var(--se-navbar-fg); }
 .dropdown-toggle.user-details { margin-left: 1.5rem !important; }
 span.user-name {
   white-space: normal; word-break: break-word; max-width: 20vw; text-align: left;
@@ -202,6 +233,11 @@ article.content section.content-header { z-index: 0; }
   z-index: 9800 !important;
   list-style: none;
   padding: var(--se-s-2) 0;
+  /* Fallback de posición por si navbar.js no corre (navbar.js lo pasa a fixed en hover) */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
 }
 .main-menu-item .submenu { display: none; }
 .main-menu-item:hover .submenu { display: block; }
@@ -233,7 +269,14 @@ button {
   min-width: 64px;
   border-radius: var(--se-r-md);
 }
-.btn { border-radius: var(--se-r-md); transition: all .2s ease; }
+.btn {
+  border-radius: var(--se-r-md);
+  font-family: var(--se-font-sans);
+  text-transform: uppercase;
+  font-weight: var(--se-weight-medium);
+  letter-spacing: 0.02em;
+  transition: all .2s ease;
+}
 .btn-primary { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
 .btn-primary:hover {
   background-color: var(--se-color-brand-hover); border-color: var(--se-color-brand-hover);
@@ -290,7 +333,8 @@ div.card > div.card-header > h2 { color: var(--se-color-on-brand); }
  * ------------------------------------------------------------------ */
 .form-control, .form-select { border-radius: var(--se-r-xs); transition: all .2s ease; }
 .form-control:focus, .form-select:focus { border-color: var(--se-color-brand); box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
-input { height: var(--se-size-control-lg); }
+/* Alto solo para inputs de texto reales (no checkbox/radio/range/file → no deformarlos) */
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]) { height: var(--se-size-control-lg); }
 
 /* Floating label (label sobre el borde del input) */
 form label:not(.form-check-label, div.col-12 > label, .form_beneficiario_select, div > label.required, div > label) {
@@ -402,3 +446,26 @@ body > .dropdown-menu { z-index: 9990 !important; position: absolute !important;
 .sidebar-wrapper, .main-header, .main-menu-wrapper { z-index: 100 !important; }
 body.modal-open { overflow: hidden; }
 .swal2-html-container th, .swal2-html-container td { text-align: left; }
+
+/* ------------------------------------------------------------------
+ * 14. Modo oscuro (EasyAdmin usa la clase .ea-dark-scheme en <body>)
+ * Los tokens --se-* ya conmutan a sus valores dark bajo .ea-dark-scheme
+ * (ver tokens.css). Aquí re-aseguramos el puente Bootstrap para que los
+ * defaults oscuros de EasyAdmin no pisen nuestros tokens. El resultado
+ * dark es IDÉNTICO al de Pronto Pago (mismos valores de token).
+ * ------------------------------------------------------------------ */
+body.ea-dark-scheme {
+  --bs-body-bg: var(--se-color-canvas);
+  --bs-body-color: var(--se-color-text);
+  --bs-border-color: var(--se-color-border);
+  --bs-secondary-bg: var(--se-color-surface);
+  --bs-tertiary-bg: var(--se-color-surface-variant);
+  --bs-emphasis-color: var(--se-color-text);
+  background: var(--se-color-canvas) !important;
+  color: var(--se-color-text);
+}
+.ea-dark-scheme .card,
+.ea-dark-scheme .table,
+.ea-dark-scheme .form-control,
+.ea-dark-scheme .form-select { background-color: var(--se-color-surface); color: var(--se-color-text); }
+.ea-dark-scheme .table thead th { background: var(--se-color-table-header-bg); color: var(--se-color-table-header-text); }

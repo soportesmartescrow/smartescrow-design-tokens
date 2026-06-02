@@ -167,7 +167,7 @@
   --se-color-on-success: #ffffff;
   --se-color-warning-subtle: var(--se-orange-subtle);
   --se-color-warning-strong: var(--se-orange-strong);
-  --se-color-on-warning: #1e2124;
+  --se-color-on-warning: var(--se-slate-950);
   --se-color-danger-subtle: var(--se-red-subtle);
   --se-color-danger-strong: var(--se-red-strong);
   --se-color-on-danger: #ffffff;
@@ -186,6 +186,7 @@
   --se-navbar-scrollbar: var(--se-slate-600);
   --se-navbar-brand: var(--se-green-500);
   --se-color-bg: var(--brand-bg, var(--se-gray-50));
+  --se-color-canvas: var(--se-gray-50);
   --se-color-surface: var(--se-gray-0);
   --se-color-surface-variant: var(--se-gray-100);
   --se-color-surface-muted: var(--se-gray-200);
@@ -209,12 +210,18 @@
 }
 
 /* ============================================================
- * MODO OSCURO — overrides de los tokens semánticos.
- * .v-theme--smartEscrowDarkTheme  -> lo aplica Vuetify a la raíz de <v-app>.
- * [data-se-theme="dark"]    -> activación manual en plataformas sin Vue.
+ * MODO OSCURO — overrides de los tokens semánticos. Se dispara con
+ * el indicador de dark de cada plataforma, así el dark es IDÉNTICO
+ * en todas (Vue/Vuetify, EasyAdmin, Bootstrap, manual):
+ *   .v-theme--smartEscrowDarkTheme     -> Vuetify (lo pone en la raíz de <v-app>)
+ *   [data-se-theme="dark"]       -> manual / HTML plano
+ *   .ea-dark-scheme              -> EasyAdmin (clase en <body>)
+ *   [data-bs-theme="dark"]       -> Bootstrap 5.3
  * ============================================================ */
 .v-theme--smartEscrowDarkTheme,
-[data-se-theme="dark"] {
+[data-se-theme="dark"],
+.ea-dark-scheme,
+[data-bs-theme="dark"] {
   --se-color-primary: var(--brand-primary, var(--se-slate-500));
   --se-color-primary-hover: var(--se-slate-550);
   --se-color-on-primary: #ffffff;
@@ -224,7 +231,7 @@
   --se-color-brand-strong: var(--se-green-400);
   --se-color-brand-strong-hover: var(--se-green-300);
   --se-color-brand-subtle: var(--se-slate-800);
-  --se-color-on-brand: #1e2124;
+  --se-color-on-brand: var(--se-slate-950);
   --se-color-success: var(--se-success-500);
   --se-color-warning: var(--se-orange-warning);
   --se-color-danger: var(--se-red-hover);
@@ -232,16 +239,16 @@
   --se-color-info: var(--se-blue-ghost-border);
   --se-color-success-subtle: var(--se-slate-800);
   --se-color-success-strong: var(--se-success-500);
-  --se-color-on-success: #1e2124;
+  --se-color-on-success: var(--se-slate-950);
   --se-color-warning-subtle: var(--se-slate-800);
   --se-color-warning-strong: var(--se-orange-warning);
-  --se-color-on-warning: #1e2124;
+  --se-color-on-warning: var(--se-slate-950);
   --se-color-danger-subtle: var(--se-slate-800);
   --se-color-danger-strong: var(--se-red-hover);
   --se-color-on-danger: #ffffff;
   --se-color-info-subtle: var(--se-slate-800);
   --se-color-info-strong: var(--se-blue-ghost-border);
-  --se-color-on-info: #1e2124;
+  --se-color-on-info: var(--se-slate-950);
   --se-color-focus-ring: rgba(135, 189, 120, 0.45);
   --se-color-table-header-bg: var(--se-slate-800);
   --se-color-table-header-text: var(--se-gray-200);
@@ -254,12 +261,13 @@
   --se-navbar-scrollbar: var(--se-gray-400);
   --se-navbar-brand: var(--se-green-500);
   --se-color-bg: var(--brand-bg, var(--se-slate-950));
+  --se-color-canvas: var(--se-slate-950);
   --se-color-surface: var(--se-slate-900);
   --se-color-surface-variant: var(--se-slate-800);
   --se-color-surface-muted: var(--se-slate-850);
   --se-color-text: var(--brand-text, var(--se-gray-200));
-  --se-color-text-muted: var(--se-gray-500);
-  --se-color-text-subtle: var(--se-gray-600);
+  --se-color-text-muted: var(--se-gray-400);
+  --se-color-text-subtle: var(--se-gray-500);
   --se-color-text-disabled: var(--se-gray-700);
   --se-color-border: var(--se-slate-550);
   --se-color-border-strong: var(--se-gray-800);

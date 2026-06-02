@@ -99,12 +99,18 @@ ${emitSemantic(semantic.light)}
 }
 
 /* ============================================================
- * MODO OSCURO — overrides de los tokens semánticos.
- * .v-theme--${THEME_DARK}  -> lo aplica Vuetify a la raíz de <v-app>.
- * [data-se-theme="dark"]    -> activación manual en plataformas sin Vue.
+ * MODO OSCURO — overrides de los tokens semánticos. Se dispara con
+ * el indicador de dark de cada plataforma, así el dark es IDÉNTICO
+ * en todas (Vue/Vuetify, EasyAdmin, Bootstrap, manual):
+ *   .v-theme--${THEME_DARK}     -> Vuetify (lo pone en la raíz de <v-app>)
+ *   [data-se-theme="dark"]       -> manual / HTML plano
+ *   .ea-dark-scheme              -> EasyAdmin (clase en <body>)
+ *   [data-bs-theme="dark"]       -> Bootstrap 5.3
  * ============================================================ */
 .v-theme--${THEME_DARK},
-[data-${PREFIX}-theme="dark"] {
+[data-${PREFIX}-theme="dark"],
+.ea-dark-scheme,
+[data-bs-theme="dark"] {
 ${emitSemantic(semantic.dark)}
 }
 `;

@@ -17,7 +17,7 @@ function buildColors(scope) {
     if (tokenName && map[tokenName]) colors[vuetifyName] = tokenToHex(map[tokenName]);
   }
   // Extras que Vuetify usa pero no tienen token semántico propio
-  colors['primary-darken-1'] = primitives.color.purple.darken;   // #1f5592
+  colors['primary-darken-1'] = primitives.color.slate[700];      // #2e3e48 (slate más oscuro, no azul)
   colors['secondary-darken-1'] = primitives.color.purple.teal;   // #018786
   colors['surface-bright'] = primitives.color.gray[0];
   colors['on-surface-variant'] = primitives.color.gray[200];
@@ -47,7 +47,8 @@ export const smartEscrowTheme = {
   dark: false,
   colors: {
     ...buildColors('light'),
-    'surface-variant': primitives.color.slate[500], // #424242 (legacy Vuetify)
+    // (sin override de surface-variant: usa el token --se-color-surface-variant = #f5f5f5,
+    //  coherente con CSS/EasyAdmin; antes se pisaba a #424242 y divergía)
   },
   variables: { ...sharedVariables },
 };
