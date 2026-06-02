@@ -191,24 +191,25 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
 }
 .user-name, .dropdown-settings-button, span.user-name { color: var(--se-navbar-fg) !important; }
 
-/* Avatar de usuario: círculo RELLENO slate/casi-negro con persona en blanco hueso
- * (como el mdi-account-circle de Pronto Pago). Sin contorno, pequeño. */
-.user-avatar {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50% !important;
-  background: var(--se-navbar-fg) !important;  /* mismo gris oscuro que los iconos del menú */
-  color: var(--se-color-canvas) !important;    /* persona en blanco hueso (#f8f8f8) */
-  border: 0 !important;
-  overflow: hidden;
+/* Icono de usuario: mdi-account-circle (idéntico a Pronto Pago, que usa MDI vía Vuetify v-icon),
+ * en vez del SVG interno de EasyAdmin. Requiere MDI cargado (fonts.css). El color usa el token
+ * del menú (--se-navbar-fg) → conmuta solo en dark. */
+.user-avatar { display: none !important; }
+.user-details, .dropdown-toggle.user-details { display: inline-flex !important; align-items: center; gap: var(--se-s-2); }
+.user-details::before {
+  content: '\F0009';                       /* mdi-account-circle */
+  font-family: 'Material Design Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--se-navbar-fg);
+  -webkit-font-smoothing: antialiased;
   flex: 0 0 auto;
 }
-.user-avatar svg, .user-avatar i { width: 15px; height: 15px; font-size: 14px; color: var(--se-color-canvas); }
-/* Si el usuario tiene logo/foto, rellena el círculo */
-img.user-avatar { object-fit: cover; }
+/* Si el usuario tiene foto/logo, mostrarla en círculo y NO el glifo */
+img.user-avatar { display: inline-block !important; width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+.user-details:has(img.user-avatar)::before { content: none; }
 .user-details { display: inline-flex; align-items: center; gap: var(--se-s-2); color: var(--se-navbar-fg); }
 .dropdown-toggle.user-details { margin-left: 1.5rem !important; }
 span.user-name {

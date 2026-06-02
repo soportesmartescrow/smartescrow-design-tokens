@@ -11,3 +11,7 @@
  * concatena como primer fichero de se-admin.css (ver bin/build-admin-assets.mjs).
  * ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Iconos: Material Design Icons (los mismos que usa la SPA Vue/Vuetify, p. ej. mdi-account-circle,
+ * mdi-bell). Para plataformas sin @mdi/font local (EasyAdmin), así se logra paridad de iconos. */
+@import url('https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css');
