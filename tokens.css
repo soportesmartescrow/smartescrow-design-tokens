@@ -178,6 +178,7 @@
   --se-color-table-header-bg: var(--se-gray-100);
   --se-color-table-header-text: var(--se-slate-600);
   --se-color-table-row-hover: rgba(0, 0, 0, 0.03);
+  --se-color-input-border: rgba(54, 65, 79, 0.38);
   --se-navbar-bg: var(--se-gray-0);
   --se-navbar-fg: var(--se-slate-600);
   --se-navbar-active: var(--se-slate-600);
@@ -254,6 +255,7 @@
   --se-color-table-header-bg: var(--se-slate-800);
   --se-color-table-header-text: var(--se-gray-200);
   --se-color-table-row-hover: rgba(255, 255, 255, 0.04);
+  --se-color-input-border: rgba(238, 238, 238, 0.30);
   --se-navbar-bg: var(--se-slate-900);
   --se-navbar-fg: var(--se-gray-200);
   --se-navbar-active: var(--se-green-500);

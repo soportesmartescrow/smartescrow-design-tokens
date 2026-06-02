@@ -205,6 +205,8 @@ export const semantic = {
     'color-table-header-bg':   ref('gray.100'),
     'color-table-header-text': ref('slate.600'),
     'color-table-row-hover':   raw('rgba(0, 0, 0, 0.03)'),
+    /* Inputs estilo Vuetify (outlined): borde translúcido + foco primario */
+    'color-input-border':   raw('rgba(54, 65, 79, 0.38)'),  // ≈ rgba(on-surface,.38) de Vuetify
 
     /* Navbar (fuente única de la barra superior — la usan navbar.css y el adaptador EasyAdmin).
      * Estética Pronto Pago: header blanco, texto slate, subrayado activo slate, borde inferior fino. */
@@ -289,6 +291,7 @@ export const semantic = {
     'color-table-header-bg':   ref('slate.800'),
     'color-table-header-text': ref('gray.200'),
     'color-table-row-hover':   raw('rgba(255, 255, 255, 0.04)'),
+    'color-input-border':   raw('rgba(238, 238, 238, 0.30)'),
 
     /* Navbar (dark) */
     'navbar-bg':            ref('slate.900'),

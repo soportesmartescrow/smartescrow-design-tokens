@@ -276,12 +276,14 @@ button {
   min-width: 64px;
   border-radius: var(--se-r-md);
 }
+/* Botones con la tipografía de Vuetify v-btn (uppercase, peso 500, letter-spacing Material) */
 .btn {
   border-radius: var(--se-r-md);
   font-family: var(--se-font-sans);
   text-transform: uppercase;
   font-weight: var(--se-weight-medium);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.0892857143em;   /* = v-btn de Vuetify */
+  min-width: 64px;
   transition: all .2s ease;
 }
 .btn-primary { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
@@ -338,8 +340,18 @@ div.card > div.card-header > h2 { color: var(--se-color-on-brand); }
 /* ------------------------------------------------------------------
  * 6. Formularios + floating labels + switch
  * ------------------------------------------------------------------ */
-.form-control, .form-select { border-radius: var(--se-r-xs); transition: all .2s ease; }
-.form-control:focus, .form-select:focus { border-color: var(--se-color-brand); box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
+/* Inputs estilo Vuetify (v-field outlined): radio 4px, borde 1px translúcido, foco primario slate */
+.form-control, .form-select {
+  border-radius: var(--se-r-xs);
+  border: 1px solid var(--se-color-input-border);
+  box-shadow: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--se-color-primary);
+  box-shadow: inset 0 0 0 1px var(--se-color-primary);  /* simula el borde 2px del outline sin descuadrar */
+  outline: none;
+}
 /* Alto solo para inputs de texto reales (no checkbox/radio/range/file → no deformarlos) */
 input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]) { height: var(--se-size-control-lg); }
 
