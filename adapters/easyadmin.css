@@ -1,0 +1,381 @@
+/* ============================================================
+ * SmartEscrow Design System — Adaptador EasyAdmin
+ * ------------------------------------------------------------
+ * Capa FINA que aplica los design tokens (--se-*) y el patrón
+ * sidebar→navbar a los selectores NATIVOS de EasyAdmin/Bootstrap.
+ *
+ * Estrategia:
+ *  1. Tematiza Bootstrap 5 reasignando sus variables --bs-* a tokens
+ *     (con eso, botones/cards/tablas/forms/modales heredan la identidad).
+ *  2. Conserva la mecánica de POSICIONAMIENTO sidebar→navbar de wallet,
+ *     pero con valores de token (colores/sombras/radios).
+ *  3. Estiliza los componentes propios de EasyAdmin no cubiertos por
+ *     Bootstrap (submenús custom, badges de entidad, floating labels,
+ *     select2, búsqueda, footer, menú móvil).
+ *
+ * Requiere: tokens.css (y, si se usan clases .se-*, components.css).
+ * El comportamiento (mover DOM, posicionar submenús, responsive) lo
+ * aporta navbar.js, inicializado por la plataforma con sus selectores.
+ *
+ * Branding por tenant: los tokens de marca respetan --brand-primary/bg/text.
+ * ============================================================ */
+
+/* ------------------------------------------------------------------
+ * 0. Puente de variables: Bootstrap 5 + legacy de wallet → tokens
+ * ------------------------------------------------------------------ */
+:root {
+  /* Bootstrap 5 (themea todos los componentes nativos de golpe) */
+  --bs-primary: var(--se-color-primary);
+  --bs-primary-rgb: 54, 65, 79;          /* #36414f */
+  --bs-secondary: var(--se-color-brand);
+  --bs-success: var(--se-color-success);
+  --bs-warning: var(--se-color-warning);
+  --bs-danger: var(--se-color-danger);
+  --bs-info: var(--se-color-info);
+  --bs-body-bg: var(--se-color-bg);
+  --bs-body-color: var(--se-color-text);
+  --bs-border-color: var(--se-color-border);
+  --bs-border-radius: var(--se-r-sm);
+  --bs-link-color: var(--se-color-primary);
+  --bs-link-hover-color: var(--se-color-brand-hover);
+
+  /* Variables legacy usadas por las plantillas de wallet → tokens */
+  --sidebar-bg: var(--se-color-primary);
+  --primary-color: var(--se-color-primary);
+  --secondary-color: var(--se-color-brand);
+  --button-primary-bg: var(--se-color-primary);
+  --button-success-bg: var(--se-color-brand);
+  --text-color: var(--se-color-on-primary);
+  --text-muted: var(--se-color-text-muted);
+  --body-bg: var(--se-color-bg);
+  --sidebar-menu-color: var(--se-color-on-primary);
+  --sidebar-menu-item-hover-bg: var(--se-color-hover);
+  --sidebar-menu-active-item-color: var(--se-color-on-primary);
+  --sidebar-menu-active-item-bg: var(--se-color-hover);
+  --form-switch-bg: var(--se-color-brand);
+  --form-switch-border-color: var(--se-color-border);
+  --font-size-sm: var(--se-text-base);
+  --border-radius: var(--se-r-xs);
+  --box-shadow: var(--se-shadow-sm);
+}
+
+body { font-family: var(--se-font-sans); color: var(--se-color-text); }
+
+/* ------------------------------------------------------------------
+ * 1. Transformación sidebar → navbar (POSICIONAMIENTO, conservado)
+ * ------------------------------------------------------------------ */
+.wrapper { position: relative; z-index: auto; }
+.wrapper, body > .wrapper { display: flex; flex-direction: column; }
+
+.sidebar-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  z-index: 100;
+  background: var(--se-color-primary);
+}
+.sidebar { display: contents !important; overflow: inherit !important; }
+
+.main-header {
+  height: var(--se-size-navbar);
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between !important;
+  padding: 0 var(--se-s-4);
+  padding-right: 0 !important;
+  background: var(--se-color-primary) !important;
+  color: var(--se-color-on-primary);
+  box-shadow: var(--se-shadow-sm) !important;
+  overflow: visible !important;
+}
+
+.logo-menu-container { display: flex; align-items: center; gap: var(--se-s-2); }
+#header-logo, #header-logo img { display: flex; align-items: center; }
+#header-logo img { max-height: 40px; margin-right: var(--se-s-3); transition: transform .2s ease; }
+#header-logo:hover img { transform: scale(1.05); }
+
+/* Menú horizontal */
+nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; overflow: visible !important; }
+.main-menu, .main-menu-wrapper .main-menu {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--se-size-navbar);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.main-menu li, .main-menu-wrapper .main-menu li { display: flex; }
+.main-menu-item { position: relative; margin: 0 var(--se-s-1); white-space: nowrap; transition: all .2s ease; }
+.main-menu-item a, a.menu-item-contents {
+  display: flex;
+  align-items: center;
+  padding: var(--se-s-3) var(--se-s-3);
+  color: var(--se-color-on-primary);
+  text-decoration: none;
+}
+a.menu-item-contents { padding: 25px var(--se-s-3); }
+.main-menu-item a:hover, a.menu-item-contents:hover { background: var(--se-color-hover) !important; }
+.main-menu-item.active a { border-radius: var(--se-r-md); font-weight: var(--se-weight-medium); }
+.main-menu-item.active::after, #main-menu .menu .menu-item.active:after {
+  content: '';
+  position: absolute;
+  left: 15%;
+  bottom: 0;
+  width: 70%;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--se-color-brand);
+}
+.menu-icon { margin-right: var(--se-s-2); font-size: 15px; }
+.main-menu-wrapper .menu-item-label {
+  font-family: var(--se-font-sans);
+  text-transform: uppercase;
+  font-weight: var(--se-weight-medium);
+  font-size: var(--se-text-base);
+  letter-spacing: 1px;
+  margin-left: 7px;
+}
+.main-menu-item .menu-section, .menu-section-label { display: none !important; }
+
+/* Ocultar/mover piezas nativas de EasyAdmin */
+.header-right { display: none !important; }
+.content-top.ea-search-enabled, .content-top.ea-search-disabled { display: none !important; }
+body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > div > a { display: none !important; }
+.admin-options-gg {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  margin-right: var(--se-s-4) !important;
+  text-transform: uppercase;
+  font-weight: var(--se-weight-medium);
+}
+.user-name, .dropdown-settings-button, span.user-name { color: var(--se-color-on-primary) !important; }
+.dropdown-toggle.user-details { margin-left: 1.5rem !important; }
+span.user-name {
+  white-space: normal; word-break: break-word; max-width: 20vw; text-align: left;
+  font-weight: var(--se-weight-medium); font-size: var(--se-text-sm);
+}
+
+/* Contenido principal */
+.main-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--se-font-sans);
+}
+.content-wrapper { z-index: auto; position: relative; display: flex; justify-content: center; }
+.content-wrapper .content { max-width: 95vw; margin-top: 40px; }
+article.content section.content-header { z-index: 0; }
+
+/* ------------------------------------------------------------------
+ * 2. Submenús (hover nativo + dropdown custom de EasyAdmin)
+ * ------------------------------------------------------------------ */
+.main-menu-item .submenu, .main-menu .custom-submenu {
+  background: var(--se-color-surface);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-md);
+  box-shadow: var(--se-shadow-lg);
+  z-index: 9800 !important;
+  list-style: none;
+  padding: var(--se-s-2) 0;
+}
+.main-menu-item .submenu { display: none; }
+.main-menu-item:hover .submenu { display: block; }
+.submenu-item a, .main-menu .custom-submenu-link {
+  display: flex; align-items: center; gap: var(--se-s-3);
+  padding: 12px 20px;
+  color: var(--se-color-text);
+  text-decoration: none;
+  font-size: var(--se-text-base);
+  font-weight: var(--se-weight-medium);
+  transition: background-color .15s ease, padding-left .15s ease, color .15s ease;
+}
+.submenu-item:hover, .main-menu .custom-submenu-link:hover {
+  background: var(--se-color-surface-variant);
+  color: var(--se-color-brand-hover);
+  padding-left: 25px;
+}
+.submenu-item-contents { color: var(--se-color-text) !important; border-radius: var(--se-r-lg); background: var(--se-color-surface); }
+.main-menu .custom-submenu-link .menu-icon { color: var(--se-color-text-subtle); width: 16px; text-align: center; }
+.main-menu .submenu-arrow { margin-left: var(--se-s-2); font-size: 12px; transition: transform .2s ease; }
+.main-menu .dropdown-trigger.active .submenu-arrow { transform: rotate(180deg); }
+
+/* ------------------------------------------------------------------
+ * 3. Botones / acciones (Bootstrap + EasyAdmin)
+ * ------------------------------------------------------------------ */
+button {
+  text-transform: uppercase;
+  font-weight: var(--se-weight-medium);
+  min-width: 64px;
+  border-radius: var(--se-r-md);
+}
+.btn { border-radius: var(--se-r-md); transition: all .2s ease; }
+.btn-primary { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
+.btn-primary:hover {
+  background-color: var(--se-color-brand-hover); border-color: var(--se-color-brand-hover);
+  transform: translateY(-1px); box-shadow: var(--se-shadow-sm);
+}
+.btn-warning,
+.btn-warning:not(:disabled):not(.disabled):hover,
+.btn-warning:not(:disabled):not(.disabled):focus { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
+.btn-group-sm > .btn, .btn-sm { padding: 10px 20px !important; font-size: var(--se-text-base); text-transform: uppercase; font-weight: var(--se-weight-medium); }
+.button-download:hover, .button-plus:hover { background-color: var(--se-color-brand); color: var(--se-color-on-brand); }
+div.btn-group.action-filters > a { padding: 8px 10px; background-color: var(--se-color-brand); color: var(--se-color-on-brand); }
+div.btn-group.action-filters > a > i { color: var(--se-color-on-brand); }
+div > button#form_submit, button#form_schedule {
+  background-color: var(--se-color-brand); color: var(--se-color-on-brand);
+  border: none; border-radius: var(--se-r-sm); font-weight: var(--se-weight-medium);
+}
+
+/* ------------------------------------------------------------------
+ * 4. Tablas
+ * ------------------------------------------------------------------ */
+.table {
+  box-shadow: var(--se-shadow-sm);
+  border-radius: var(--se-r-xs);
+  overflow: hidden;
+}
+.table thead th {
+  background: var(--se-color-table-header-bg);
+  color: var(--se-color-table-header-text);
+  font-weight: var(--se-weight-medium);
+  padding: 12px 10px;
+}
+.table tbody tr { transition: all .15s ease; }
+.table tbody tr:hover { background-color: var(--se-color-table-row-hover); }
+
+/* ------------------------------------------------------------------
+ * 5. Cards
+ * ------------------------------------------------------------------ */
+.card { border-radius: var(--se-r-xs); overflow: hidden; transition: all .3s ease; }
+.card:hover { transform: translateY(-5px); box-shadow: var(--se-shadow-md); }
+.card-header { font-weight: var(--se-weight-medium); }
+div.card > div.card-header { background-color: var(--se-color-brand) !important; }
+div.card > div.card-header > h2 { color: var(--se-color-on-brand); }
+
+/* ------------------------------------------------------------------
+ * 6. Formularios + floating labels + switch
+ * ------------------------------------------------------------------ */
+.form-control, .form-select { border-radius: var(--se-r-xs); transition: all .2s ease; }
+.form-control:focus, .form-select:focus { border-color: var(--se-color-brand); box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
+input { height: var(--se-size-control-lg); }
+
+/* Floating label (label sobre el borde del input) */
+form label:not(.form-check-label, div.col-12 > label, .form_beneficiario_select, div > label.required, div > label) {
+  position: relative;
+  top: 11px;
+  left: var(--se-s-4);
+  font-size: var(--se-text-base);
+  background-color: var(--se-color-surface);
+  padding: 0 9px;
+  color: var(--se-color-text-subtle);
+}
+form label.form-check-label, form div.col-12 > label, form label.form_beneficiario_select,
+form div > label.required, form div > label { font-weight: var(--se-weight-bold); padding: 0 10px; font-size: var(--se-text-md); }
+
+.form-switch .form-check-input { background-color: var(--se-color-border); border-color: var(--se-color-border); cursor: pointer; height: 30px; width: 51px; }
+.form-switch .form-check-input:checked { background-color: var(--se-color-brand); border-color: var(--se-color-brand); }
+
+.filter-form .form-control:focus, .filter-form .form-select:focus { border-color: var(--se-color-brand); box-shadow: 0 0 0 2px var(--se-color-focus-ring); }
+
+/* ------------------------------------------------------------------
+ * 7. select2
+ * ------------------------------------------------------------------ */
+select#form_record, select { padding: 10px; border-radius: var(--se-r-sm); font-size: var(--se-text-md); }
+span.select2-selection.select2-selection--single { padding: 10px 0 40px 0; }
+span.select2-selection__arrow { margin: 13px; }
+span.select2-container.select2-container--classic.select2-container--open span.select2-dropdown.select2-dropdown--below,
+span.select2-container.select2-container--default.select2-container--open span.select2-dropdown--below { color: var(--se-color-text); }
+div#form_record-ts-control.ts-control { color: var(--se-color-text); margin-bottom: 20px; }
+
+/* ------------------------------------------------------------------
+ * 8. Búsqueda
+ * ------------------------------------------------------------------ */
+.content-search .form-control:focus { box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
+.form-widget { position: relative; width: 100%; }
+.form-widget .content-search-label input[type="search"] { padding-left: 30px; margin-right: 10px; box-sizing: border-box; }
+.content-search-icon { position: absolute; left: 15px; top: 55%; transform: translateY(-60%); pointer-events: none; font-size: 14px; color: var(--se-color-text-subtle); }
+.content-search-reset { position: absolute; right: 2px; top: 40%; transform: translateY(-50%); height: 24px; width: 24px; color: var(--se-color-text-subtle); text-decoration: none; }
+.content-search-reset:hover { color: var(--se-color-text); }
+div.form-widget a.content-search-reset { display: none; }
+.content-search-label { display: block; width: 90%; padding-top: 10px !important; }
+
+/* ------------------------------------------------------------------
+ * 9. Badges de tipo de entidad (EasyAdmin custom)
+ * ------------------------------------------------------------------ */
+.badge.badge-entity-type {
+  display: inline-flex; align-items: center;
+  font-size: var(--se-text-xs); font-weight: var(--se-weight-bold);
+  padding: 6px 12px; border-radius: var(--se-r-full);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  border: 1px solid transparent; transition: all .2s ease;
+}
+.badge.badge-entity-type i { margin-right: var(--se-s-1); }
+.badge.badge-primary.bg-primary { background: var(--se-color-info-subtle) !important; color: var(--se-color-info-strong); border-color: var(--se-color-info-strong); }
+.badge.badge-success.bg-success { background: var(--se-color-success-subtle) !important; color: var(--se-color-success-strong); border-color: var(--se-color-success-strong); }
+.field-money::before { content: "€"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--se-color-text-muted); font-weight: var(--se-weight-bold); }
+
+/* Filas resaltadas por estado de operación */
+.table tbody tr[data-operation-status="contrato firmado, cuenta activada"] { background-color: var(--se-color-success-subtle); border-left: 4px solid var(--se-color-success-strong); }
+.table tbody tr[data-operation-status="En proceso de financiamiento"] { background-color: var(--se-color-warning-subtle); border-left: 4px solid var(--se-color-warning-strong); }
+.table tbody tr[data-operation-status="Cancelada"] { background-color: var(--se-color-danger-subtle); border-left: 4px solid var(--se-color-danger-strong); }
+
+/* ------------------------------------------------------------------
+ * 10. Alertas
+ * ------------------------------------------------------------------ */
+.alert { border-radius: var(--se-r-xs); box-shadow: var(--se-shadow-lg); }
+
+/* ------------------------------------------------------------------
+ * 11. Footer
+ * ------------------------------------------------------------------ */
+.main-footer { background: var(--se-color-footer-bg); color: var(--se-color-footer-text); box-shadow: 0 -2px 10px var(--se-color-overlay-soft); margin-top: 2rem; }
+.footer-links a { color: var(--se-color-footer-text); transition: all .2s ease; font-weight: var(--se-weight-medium); }
+.footer-links a:hover { color: var(--se-color-brand); text-decoration: underline; }
+
+/* ------------------------------------------------------------------
+ * 12. Tres puntos / overlay / menú móvil (posicionamiento conservado)
+ * ------------------------------------------------------------------ */
+.three-dots-menu { display: none; flex-direction: column; justify-content: space-between; width: 6px; height: 24px; background: transparent; border: none; cursor: pointer; padding: 0; }
+.three-dots-menu span { width: 6px; height: 6px; background: var(--se-color-on-primary); border-radius: 50%; transition: all .3s linear; }
+.custom-overlay { display: none; position: fixed; inset: 0; background: var(--se-color-overlay); z-index: 1999; }
+.custom-overlay.active { display: block; }
+.custom-mobile-menu {
+  display: none; position: fixed; top: 0; right: -100%;
+  width: 80%; max-width: 300px; height: 100vh;
+  background: var(--se-color-primary); color: var(--se-color-on-primary);
+  z-index: 2000; overflow-y: auto; padding-top: var(--se-size-navbar);
+  box-shadow: var(--se-shadow-lg); transition: right .3s ease;
+}
+.custom-mobile-menu.active { right: 0; }
+
+@media (max-width: 1032px) {
+  .main-menu-wrapper { display: none !important; }
+  .three-dots-menu { display: flex; }
+  .custom-mobile-menu { display: block; }
+  .custom-mobile-menu .main-menu { flex-direction: column; overflow-x: visible; width: 100%; }
+  .custom-mobile-menu .main-menu-item { margin: 0; width: 100%; }
+  .custom-mobile-menu .main-menu-item a { padding: 1rem; width: 100%; justify-content: flex-start; }
+  .custom-mobile-menu .submenu { position: static !important; box-shadow: none; background: var(--se-color-surface-variant); width: 100%; }
+}
+
+/* ------------------------------------------------------------------
+ * 13. Modales — jerarquía de z-index (conservada)
+ * ------------------------------------------------------------------ */
+.modal-backdrop, .modal-backdrop.show, .modal-backdrop.fade { z-index: 10000 !important; position: fixed !important; }
+.modal, .modal.show, .modal.fade { z-index: 10050 !important; position: fixed !important; }
+.modal .modal-dialog { z-index: 10051 !important; position: relative !important; }
+.modal .dropdown-menu { z-index: 10060 !important; position: absolute !important; }
+.modal-content { z-index: inherit !important; position: relative !important; background: var(--se-color-surface); }
+body > .dropdown-menu { z-index: 9990 !important; position: absolute !important; }
+.sidebar-wrapper, .main-header, .main-menu-wrapper { z-index: 100 !important; }
+body.modal-open { overflow: hidden; }
+.swal2-html-container th, .swal2-html-container td { text-align: left; }

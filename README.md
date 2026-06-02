@@ -298,29 +298,57 @@ Detalle de publicación y versionado: **§9 y §10**.
 
 ## 8. El bundle (paquete npm)
 
-Esta carpeta **es** un paquete npm autónomo: `@smartescrow/prontopago-design-tokens`
+Esta carpeta **es** un paquete npm autónomo: `@smartescrow/design-system`
 (ver `package.json`). Se puede publicar y consumir desde otros proyectos sin copiar nada a mano.
 
 **Contenido publicado** (campo `files`):
 
 | Archivo | Para qué |
 |---|---|
-| `tokens.css` | El artefacto portable (CSS custom properties + dark). Lo que usa cualquier plataforma. |
+| `tokens.css` | Artefacto portable de tokens (CSS custom properties + dark). Base de todo. |
 | `tokens.mjs` | Fuente de verdad + API JS (`primitives`, `semantic`, `tokenToHex`…). |
+| `components.css` | **Componentes** genéricos reutilizables (`.se-btn/.se-card/.se-table/.se-badge/.se-input/.se-search/.se-submenu/.se-modal…`) sobre tokens. |
+| `navbar.css` + `navbar.js` | **Navbar** (patrón sidebar→header horizontal): posicionamiento + mecánica vanilla (mover DOM, posicionar submenús, responsive). Sin negocio. |
+| `adapters/easyadmin.css` | **Adaptador EasyAdmin**: mapea Bootstrap `--bs-*` y los selectores nativos de EasyAdmin a tokens/componentes + navbar. |
 | `vuetify-theme.mjs` | Temas Vuetify light/dark listos. |
 | `build-tokens.mjs` | Generador (se ejecuta solo en `prepare`/`build`). |
-| `README.md` | Esta doc. |
 
 **Puntos de entrada** (campo `exports`):
 
 ```js
-import { primitives, semantic } from '@smartescrow/prontopago-design-tokens';        // API JS
-import { smartEscrowTheme, smartEscrowDarkTheme } from '@smartescrow/prontopago-design-tokens/vuetify';
-import '@smartescrow/prontopago-design-tokens/css';                                   // = tokens.css
+import { primitives, semantic } from '@smartescrow/design-system';            // API JS de tokens
+import { smartEscrowTheme, smartEscrowDarkTheme } from '@smartescrow/design-system/vuetify';
+import '@smartescrow/design-system/css';            // tokens.css (base, siempre primero)
+import '@smartescrow/design-system/components';     // clases .se-* (botones, tablas, badges…)
+import '@smartescrow/design-system/navbar.css';     // posicionamiento de la navbar
+import { initNavbar } from '@smartescrow/design-system/navbar.js'; // mecánica navbar
+import '@smartescrow/design-system/easyadmin';      // adaptador EasyAdmin (themea Bootstrap)
 ```
 
-`tokens.css` se regenera automáticamente al instalar (script `prepare`), así que el consumidor
-siempre recibe un CSS coherente con `tokens.mjs`.
+`tokens.css` se regenera automáticamente al instalar (script `prepare`).
+
+### Componentes, navbar y adaptadores (reutilizables por cualquier sistema)
+
+- **`components.css`** — capa de componentes 100 % basada en tokens, **no acoplada a ningún
+  framework**. Cualquier plataforma puede usar `.se-btn`, `.se-card`, `.se-table`, `.se-badge--success`,
+  `.se-input`, `.se-field` (floating label), `.se-search`, `.se-submenu`, `.se-modal`, `.se-alert`…
+- **`navbar.css` + `navbar.js`** — el patrón "sidebar clásica → navbar horizontal en el header".
+  El CSS aporta el posicionamiento (`.se-navbar*`); el JS la mecánica parametrizable:
+  ```js
+  initNavbar({
+    relocate:   [{ from: '.navbar-custom-menu', to: '.admin-options-gg' }],
+    submenus:   { item: '.main-menu-item', panel: '.submenu', top: 50, offsetX: -80 },
+    responsive: { toggle: '.three-dots-menu', overlay: '.custom-overlay', mobile: '.custom-mobile-menu' },
+  });
+  ```
+  No hace fetch ni contiene lógica de negocio: cada plataforma pasa SUS selectores.
+- **`adapters/easyadmin.css`** — capa **fina** específica de EasyAdmin: reasigna las variables de
+  Bootstrap 5 (`--bs-primary/--bs-body-bg/…`) a los tokens (themea de golpe botones/tablas/forms/
+  modales) y aplica el navbar + componentes a los selectores nativos (`.sidebar`, `.main-menu`,
+  `.submenu`, `.content-top`…). Otros entornos tendrían su propio adaptador (Tailwind, Vuetify…).
+
+> **Regla de reutilización:** `components.css` y `navbar.*` **no** dependen de selectores de
+> EasyAdmin; solo el adaptador lo hace. Así otro sistema con esos componentes los usa directamente.
 
 ---
 
@@ -365,7 +393,7 @@ npm publish        # 'prepare' regenera tokens.css antes de empaquetar
    ```
    Regla SemVer para tokens: **añadir** token = minor; **renombrar/eliminar** = major;
    cambiar un **valor** sin tocar nombres = patch o minor según impacto visual.
-4. En los proyectos consumidores: `npm update @smartescrow/prontopago-design-tokens`
+4. En los proyectos consumidores: `npm update @smartescrow/design-system`
    (o fija el tag: `#v1.0.1`).
 
 ---
@@ -382,15 +410,15 @@ npm install github:soportesmartescrow/smartescrow-design-tokens#v1.0.0
 npm install ../design-tokens          # -> "file:../design-tokens"
 
 # Desde registry npm (Opción B):
-npm install @smartescrow/prontopago-design-tokens
+npm install @smartescrow/design-system
 ```
 
 ### Caso 1 · Proyecto Vue + Vuetify
 ```js
 import { createVuetify } from 'vuetify';
 import { smartEscrowTheme, smartEscrowDarkTheme, themeNames }
-  from '@smartescrow/prontopago-design-tokens/vuetify';
-import '@smartescrow/prontopago-design-tokens/css';   // define las --se-* (light + dark)
+  from '@smartescrow/design-system/vuetify';
+import '@smartescrow/design-system/css';   // define las --se-* (light + dark)
 
 export default createVuetify({
   theme: {
@@ -404,7 +432,7 @@ Luego, en tus estilos, usa `var(--se-color-*)`, `var(--se-r-*)`, etc.
 ### Caso 2 · Proyecto sin JS / Symfony Twig / HTML plano
 Sirve el CSS y enlázalo en el `<head>`:
 ```html
-<link rel="stylesheet" href="/path/a/node_modules/@smartescrow/prontopago-design-tokens/tokens.css">
+<link rel="stylesheet" href="/path/a/node_modules/@smartescrow/design-system/tokens.css">
 ```
 o cópialo a tu carpeta pública / pásalo por tu bundler. Modo oscuro: `<html data-se-theme="dark">`.
 
@@ -413,7 +441,7 @@ EasyAdmin usa variables Bootstrap (`--bs-*`). Añade el CSS de tokens + un peque
 que mapee Bootstrap → tokens, p. ej. en un `admin.css` cargado por el `DashboardController`
 (`configureAssets()->addCssFile(...)`):
 ```css
-@import "@smartescrow/prontopago-design-tokens/tokens.css";
+@import "@smartescrow/design-system/tokens.css";
 :root {
   --bs-primary:        var(--se-color-primary);
   --bs-primary-rgb:    54, 65, 79;      /* #36414f */

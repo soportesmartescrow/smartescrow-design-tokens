@@ -91,6 +91,9 @@ ${emitScale('space', primitives.space, `${p}-s`)}
   /* ---------- PRIMITIVOS · z-index ---------- */
 ${emitScale('z-index', primitives.z, `${p}-z`)}
 
+  /* ---------- PRIMITIVOS · tamaños de control ---------- */
+${emitScale('size', primitives.size, `${p}-size`)}
+
   /* ---------- SEMÁNTICOS (light) ---------- */
 ${emitSemantic(semantic.light)}
 }

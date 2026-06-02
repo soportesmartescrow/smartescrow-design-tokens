@@ -42,7 +42,9 @@
   --se-green-800: #529b5e;
   --se-green-900: #3f7d49;
   /* success */
+  --se-success-100: #e3f6e6;
   --se-success-500: #64d26f;
+  --se-success-700: #2e7d4f;
   /* gray */
   --se-gray-0: #ffffff;
   --se-gray-50: #f8f8f8;
@@ -67,12 +69,18 @@
   --se-blue-bootstrap: #0d6efd;
   --se-blue-ghost: #c8ebfb;
   --se-blue-ghost-border: #4a9eff;
+  --se-blue-subtle: #e7f0ff;
+  --se-blue-strong: #1f5592;
   /* red */
   --se-red-text: #cb1d10;
   --se-red-base: #e04b43;
   --se-red-hover: #f44336;
+  --se-red-subtle: #fdecea;
+  --se-red-strong: #b3261e;
   /* orange */
   --se-orange-warning: #ffa800;
+  --se-orange-subtle: #fff3da;
+  --se-orange-strong: #a86a00;
   /* purple */
   --se-purple-secondary: #5564d7;
   --se-purple-darken: #1f5592;
@@ -131,6 +139,13 @@
   --se-z-loader-card: 1999999999;
   --se-z-toast: 2147483647;
 
+  /* ---------- PRIMITIVOS · tamaños de control ---------- */
+  /* size */
+  --se-size-control-sm: 34px;
+  --se-size-control: 40px;
+  --se-size-control-lg: 52px;
+  --se-size-navbar: 62px;
+
   /* ---------- SEMÁNTICOS (light) ---------- */
   --se-color-primary: var(--brand-primary, var(--se-slate-600));
   --se-color-primary-hover: var(--se-slate-700);
@@ -147,6 +162,22 @@
   --se-color-danger: var(--se-red-base);
   --se-color-danger-hover: var(--se-red-hover);
   --se-color-info: var(--se-blue-info);
+  --se-color-success-subtle: var(--se-success-100);
+  --se-color-success-strong: var(--se-success-700);
+  --se-color-on-success: #ffffff;
+  --se-color-warning-subtle: var(--se-orange-subtle);
+  --se-color-warning-strong: var(--se-orange-strong);
+  --se-color-on-warning: #1e2124;
+  --se-color-danger-subtle: var(--se-red-subtle);
+  --se-color-danger-strong: var(--se-red-strong);
+  --se-color-on-danger: #ffffff;
+  --se-color-info-subtle: var(--se-blue-subtle);
+  --se-color-info-strong: var(--se-blue-strong);
+  --se-color-on-info: #ffffff;
+  --se-color-focus-ring: rgba(135, 189, 120, 0.35);
+  --se-color-table-header-bg: var(--se-gray-100);
+  --se-color-table-header-text: var(--se-slate-600);
+  --se-color-table-row-hover: rgba(0, 0, 0, 0.03);
   --se-color-bg: var(--brand-bg, var(--se-gray-50));
   --se-color-surface: var(--se-gray-0);
   --se-color-surface-variant: var(--se-gray-100);
@@ -192,6 +223,22 @@
   --se-color-danger: var(--se-red-hover);
   --se-color-danger-hover: var(--se-red-base);
   --se-color-info: var(--se-blue-ghost-border);
+  --se-color-success-subtle: var(--se-slate-800);
+  --se-color-success-strong: var(--se-success-500);
+  --se-color-on-success: #1e2124;
+  --se-color-warning-subtle: var(--se-slate-800);
+  --se-color-warning-strong: var(--se-orange-warning);
+  --se-color-on-warning: #1e2124;
+  --se-color-danger-subtle: var(--se-slate-800);
+  --se-color-danger-strong: var(--se-red-hover);
+  --se-color-on-danger: #ffffff;
+  --se-color-info-subtle: var(--se-slate-800);
+  --se-color-info-strong: var(--se-blue-ghost-border);
+  --se-color-on-info: #1e2124;
+  --se-color-focus-ring: rgba(135, 189, 120, 0.45);
+  --se-color-table-header-bg: var(--se-slate-800);
+  --se-color-table-header-text: var(--se-gray-200);
+  --se-color-table-row-hover: rgba(255, 255, 255, 0.04);
   --se-color-bg: var(--brand-bg, var(--se-slate-950));
   --se-color-surface: var(--se-slate-900);
   --se-color-surface-variant: var(--se-slate-800);

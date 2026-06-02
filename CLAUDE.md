@@ -1,4 +1,4 @@
-# CLAUDE.md — @smartescrow/prontopago-design-tokens
+# CLAUDE.md — @smartescrow/design-system
 
 Guía para Claude Code al trabajar en **este repo**
 (`github.com/soportesmartescrow/smartescrow-design-tokens`).
@@ -33,7 +33,18 @@ instalar §11).
 - `vuetify-theme.mjs` — temas Vuetify `smartEscrowTheme` / `smartEscrowDarkTheme`
   (resuelve semánticos a hex; Vuetify no admite `var()`).
 - `tokens.css` — artefacto portable generado (`:root` light + bloque dark).
-- `README.md` — doc completa.
+- `components.css` — componentes genéricos reutilizables (`.se-*`) sobre tokens. **A mano.**
+- `navbar.css` + `navbar.js` — patrón sidebar→navbar: CSS de posicionamiento + mecánica vanilla
+  parametrizable (mover DOM, posicionar submenús, responsive). **Sin negocio ni fetch.**
+- `adapters/easyadmin.css` — adaptador EasyAdmin: mapea `--bs-*` y selectores nativos a tokens/
+  componentes/navbar. Los demás archivos `components/navbar` NO dependen de EasyAdmin (reutilizables).
+- `README.md` — doc completa (§8 componentes/navbar/adaptadores).
+
+## Reglas de reutilización (importante)
+
+- `components.css` y `navbar.*` deben permanecer **agnósticos** (sin selectores de EasyAdmin ni de
+  ninguna plataforma). Todo acople a un framework concreto va en un **adaptador** bajo `adapters/`.
+- `navbar.js` no hace fetch ni lógica de negocio: solo movimiento/posición. Recibe selectores por config.
 
 ## Cómo expandir (resumen; detalle en README §7)
 
@@ -59,7 +70,7 @@ SemVer para tokens: **añadir** = minor · **renombrar/eliminar** = major ·
 
 ## Consumidores (no romperlos)
 
-- **ProntoPago** lo usa como `"@smartescrow/prontopago-design-tokens": "file:../design-tokens"`
+- **ProntoPago** lo usa como `"@smartescrow/design-system": "file:../design-tokens"`
   (carpeta hermana) e importa `…/css` y `…/vuetify`. En CI/deploy se usa el **tag git**
   (`github:soportesmartescrow/smartescrow-design-tokens#vX.Y.Z`).
 - Webpack del consumidor necesita `resolve.symlinks = false` cuando se instala con `file:`
@@ -87,11 +98,12 @@ decisión destructiva o ambigua que no puedas resolver con un valor por defecto 
 
 DATOS
 - Repo del design system: https://github.com/soportesmartescrow/smartescrow-design-tokens
-- Paquete npm: @smartescrow/prontopago-design-tokens  (es npm/CSS, NO Composer → va a node_modules, no a vendor)
+- Paquete npm: @smartescrow/design-system  (es npm/CSS, NO Composer → va a node_modules, no a vendor)
 - Prefijo de tokens: --se-   (ej. var(--se-color-primary), var(--se-color-brand), var(--se-r-md), var(--se-shadow-sm))
 - Modo oscuro: clase .v-theme--smartEscrowDarkTheme (Vuetify) o atributo [data-se-theme="dark"] en <html>
 - Branding por tenant: los tokens de marca respetan var(--brand-primary|bg|text) si existen, con fallback
-- Entradas del paquete (exports): "." (API JS), "/vuetify" (temas Vuetify light+dark), "/css" y "/tokens.css" (CSS portable)
+- Entradas (exports): "." (API JS tokens), "/css" (tokens.css), "/components" (clases .se-*),
+  "/navbar.css" + "/navbar.js" (patrón sidebar→navbar), "/easyadmin" (adaptador EasyAdmin), "/vuetify" (temas)
 - Reglas para editar tokens: ver CLAUDE.md y README §7 DENTRO del repo del design system
 
 OBJETIVO
@@ -106,14 +118,17 @@ PASOS
    - elige el vX.Y.Z mayor e instala:  npm install github:soportesmartescrow/smartescrow-design-tokens#vX.Y.Z
    - (si el repo es privado, asegúrate de tener acceso git por SSH o token antes de instalar)
 3) Aplica según el tipo de proyecto:
-   - Con build JS: importa el CSS de tokens en el entry principal:  import '@smartescrow/prontopago-design-tokens/css'
+   - Con build JS: importa el CSS de tokens en el entry principal:  import '@smartescrow/design-system/css'
    - Vue + Vuetify: importa { smartEscrowTheme, smartEscrowDarkTheme, themeNames } desde
-     '@smartescrow/prontopago-design-tokens/vuetify' y regístralos en createVuetify({ theme: { defaultTheme: themeNames.light, themes: {...} } }). Añade un toggle de tema si procede.
-   - Symfony Encore: añade  .addStyleEntry('design-tokens', require.resolve('@smartescrow/prontopago-design-tokens/tokens.css'))
+     '@smartescrow/design-system/vuetify' y regístralos en createVuetify({ theme: { defaultTheme: themeNames.light, themes: {...} } }). Añade un toggle de tema si procede.
+   - Symfony Encore: añade  .addStyleEntry('design-tokens', require.resolve('@smartescrow/design-system/tokens.css'))
      (emite public/build/design-tokens.css para enlazarlo en plantillas Twig standalone) e importa el CSS en el entry JS.
      Si instalas como carpeta hermana con file:, añade  config.resolve.symlinks = false  (si no, Babel intenta inyectar core-js y falla el build).
-   - PHP/Twig/HTML sin build: copia node_modules/@smartescrow/prontopago-design-tokens/tokens.css a la carpeta pública y enlázalo con <link>. Dark con [data-se-theme="dark"].
-   - EasyAdmin: carga tokens.css + un adaptador que mapee --bs-* a los --se-* (README §11 del paquete).
+   - PHP/Twig/HTML sin build: copia node_modules/@smartescrow/design-system/tokens.css a la carpeta pública y enlázalo con <link>. Dark con [data-se-theme="dark"].
+   - EasyAdmin: importa en un entry "admin"  '@smartescrow/design-system/css' + '/components' +
+     '/navbar.css' + '/easyadmin' (este reasigna --bs-* a tokens y themea Bootstrap) e inicializa
+     '/navbar.js' con los selectores de EasyAdmin (relocate/submenus/responsive). Cárgalo con
+     EasyAdmin Assets->addWebpackEncoreEntry('admin'). Conserva SOLO el posicionamiento; el resto, tokens.
    Después, centraliza los colores/medidas de marca hardcodeados del proyecto sustituyéndolos por var(--se-*) PRESERVANDO el aspecto. No toques estilos de librerías de terceros.
 4) ¿Faltan tokens? Si este proyecto usa colores/medidas de marca que NO existen en el sistema:
    a) Clona el repo del design system, LEE su CLAUDE.md y README §7 y respétalos.

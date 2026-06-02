@@ -1,26 +1,36 @@
 {
-  "name": "@smartescrow/prontopago-design-tokens",
-  "version": "1.0.2",
-  "description": "Design tokens de Pronto Pago (--se-*): paleta slate+verde, tipografía Poppins, radios, sombras, espaciado, z-index, modo oscuro y tema Vuetify. Artefacto portable para reproducir la estética de Pronto Pago en cualquier plataforma.",
+  "name": "@smartescrow/design-system",
+  "version": "1.1.0",
+  "description": "Design system SmartEscrow (--se-*): tokens (paleta slate+verde, tipografía Poppins, radios, sombras, espaciado, z-index, modo oscuro), tema Vuetify, componentes reutilizables, navbar (patrón sidebar→header) y adaptador EasyAdmin. Portable a cualquier plataforma.",
   "type": "module",
   "license": "UNLICENSED",
   "author": "SmartEscrow Team",
-  "keywords": ["design-tokens", "design-system", "css-variables", "vuetify", "prontopago", "smartescrow"],
+  "keywords": ["design-tokens", "design-system", "css-variables", "components", "navbar", "easyadmin", "vuetify", "prontopago", "smartescrow"],
   "main": "./tokens.mjs",
   "module": "./tokens.mjs",
   "exports": {
     ".": "./tokens.mjs",
     "./css": "./tokens.css",
     "./tokens.css": "./tokens.css",
+    "./components": "./components.css",
+    "./components.css": "./components.css",
+    "./navbar.css": "./navbar.css",
+    "./navbar.js": "./navbar.js",
+    "./easyadmin": "./adapters/easyadmin.css",
     "./vuetify": "./vuetify-theme.mjs",
     "./package.json": "./package.json"
   },
   "files": [
     "tokens.mjs",
     "tokens.css",
+    "components.css",
+    "navbar.css",
+    "navbar.js",
+    "adapters/easyadmin.css",
     "vuetify-theme.mjs",
     "build-tokens.mjs",
-    "README.md"
+    "README.md",
+    "CLAUDE.md"
   ],
   "sideEffects": ["*.css"],
   "scripts": {

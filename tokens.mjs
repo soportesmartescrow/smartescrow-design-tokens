@@ -59,7 +59,7 @@ export const primitives = {
       900: '#3f7d49', // verde profundo (contraste dark / texto)
     },
     /* Verde de éxito (semántico, distinto de la escala de marca) */
-    success: { 500: '#64d26f' },
+    success: { 500: '#64d26f', 100: '#e3f6e6', 700: '#2e7d4f' },
     /* Neutros / grises (cool→neutro) */
     gray: {
       0:   '#ffffff',
@@ -87,15 +87,19 @@ export const primitives = {
       bootstrap:   '#0d6efd', // fallback widget branding
       ghost:          '#c8ebfb', // drag ghost bg
       'ghost-border': '#4a9eff', // drag ghost border
+      subtle:         '#e7f0ff', // fondo badge/info sutil
+      strong:         '#1f5592', // texto sobre info sutil
     },
     /* Rojos / peligro */
     red: {
-      text:  '#cb1d10', // closeButton texto
-      base:  '#e04b43', // Vuetify error
-      hover: '#f44336', // closeButton:hover bg
+      text:   '#cb1d10', // closeButton texto
+      base:   '#e04b43', // Vuetify error
+      hover:  '#f44336', // closeButton:hover bg
+      subtle: '#fdecea', // fondo badge danger sutil
+      strong: '#b3261e', // texto sobre danger sutil
     },
     /* Naranja / aviso */
-    orange: { warning: '#ffa800' },
+    orange: { warning: '#ffa800', subtle: '#fff3da', strong: '#a86a00' },
     /* Secundario (Vuetify secondary) */
     purple: { secondary: '#5564d7', darken: '#1f5592', teal: '#018786' },
   },
@@ -145,6 +149,13 @@ export const primitives = {
     'loader-card': '1999999999',
     toast:   '2147483647', // swal2 / loading-card
   },
+  /* Alturas de control (inputs, botones) */
+  size: {
+    'control-sm': '34px',
+    'control':    '40px',
+    'control-lg': '52px',
+    'navbar':     '62px', // alto de la navbar (sidebar→header)
+  },
 };
 
 /* ============================================================
@@ -174,6 +185,26 @@ export const semantic = {
     'color-danger':         ref('red.base'),
     'color-danger-hover':   ref('red.hover'),
     'color-info':           ref('blue.info'),
+
+    /* Estado · sutil (fondo badge) / strong (texto) / on (texto sobre sólido) */
+    'color-success-subtle': ref('success.100'),
+    'color-success-strong': ref('success.700'),
+    'color-on-success':     raw('#ffffff'),
+    'color-warning-subtle': ref('orange.subtle'),
+    'color-warning-strong': ref('orange.strong'),
+    'color-on-warning':     raw('#1e2124'),
+    'color-danger-subtle':  ref('red.subtle'),
+    'color-danger-strong':  ref('red.strong'),
+    'color-on-danger':      raw('#ffffff'),
+    'color-info-subtle':    ref('blue.subtle'),
+    'color-info-strong':    ref('blue.strong'),
+    'color-on-info':        raw('#ffffff'),
+
+    /* Componentes: foco, tablas */
+    'color-focus-ring':     raw('rgba(135, 189, 120, 0.35)'),
+    'color-table-header-bg':   ref('gray.100'),
+    'color-table-header-text': ref('slate.600'),
+    'color-table-row-hover':   raw('rgba(0, 0, 0, 0.03)'),
 
     /* Superficies / texto / bordes */
     'color-bg':             ref('gray.50', { brand: 'bg' }),
@@ -225,6 +256,24 @@ export const semantic = {
     'color-danger':         ref('red.hover'),
     'color-danger-hover':   ref('red.base'),
     'color-info':           ref('blue.ghost-border'),
+
+    'color-success-subtle': ref('slate.800'),
+    'color-success-strong': ref('success.500'),
+    'color-on-success':     raw('#1e2124'),
+    'color-warning-subtle': ref('slate.800'),
+    'color-warning-strong': ref('orange.warning'),
+    'color-on-warning':     raw('#1e2124'),
+    'color-danger-subtle':  ref('slate.800'),
+    'color-danger-strong':  ref('red.hover'),
+    'color-on-danger':      raw('#ffffff'),
+    'color-info-subtle':    ref('slate.800'),
+    'color-info-strong':    ref('blue.ghost-border'),
+    'color-on-info':        raw('#1e2124'),
+
+    'color-focus-ring':     raw('rgba(135, 189, 120, 0.45)'),
+    'color-table-header-bg':   ref('slate.800'),
+    'color-table-header-text': ref('gray.200'),
+    'color-table-row-hover':   raw('rgba(255, 255, 255, 0.04)'),
 
     'color-bg':             ref('slate.950', { brand: 'bg' }),
     'color-surface':        ref('slate.900'),

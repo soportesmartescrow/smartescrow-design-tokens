@@ -1,0 +1,284 @@
+/* ============================================================
+ * Pronto Pago / SmartEscrow — Componentes (clases .se-*)
+ * ------------------------------------------------------------
+ * Capa de componentes GENÉRICA y reutilizable, construida 100% sobre
+ * los design tokens (--se-*). No depende de ningún framework ni de
+ * EasyAdmin: cualquier plataforma puede usar estas clases.
+ *
+ * Requiere tokens.css cargado antes (define las --se-*).
+ * Modo oscuro: heredado automáticamente vía los tokens semánticos.
+ *
+ * Para EasyAdmin/Bootstrap, el adaptador (adapters/easyadmin.css)
+ * mapea los componentes nativos a estos mismos tokens.
+ * ============================================================ */
+
+/* ---------------------------------------------------------------
+ * Botones
+ * --------------------------------------------------------------- */
+.se-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--se-s-2);
+  min-width: 64px;
+  height: var(--se-size-control-sm);
+  padding: 0 var(--se-s-4);
+  border: 1px solid transparent;
+  border-radius: var(--se-r-md);
+  background: var(--se-color-surface-variant);
+  color: var(--se-color-text);
+  font-family: var(--se-font-sans);
+  font-size: var(--se-text-base);
+  font-weight: var(--se-weight-medium);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease, transform .1s ease;
+}
+.se-btn:hover { background: var(--se-color-surface-muted); }
+.se-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
+.se-btn:disabled, .se-btn[disabled] { opacity: .6; cursor: default; }
+
+.se-btn--primary {
+  background: var(--se-color-primary);
+  color: var(--se-color-on-primary);
+  border-color: var(--se-color-primary);
+}
+.se-btn--primary:hover { background: var(--se-color-primary-hover); border-color: var(--se-color-primary-hover); }
+
+.se-btn--brand {
+  background: var(--se-color-brand);
+  color: var(--se-color-on-brand);
+  border-color: var(--se-color-brand);
+}
+.se-btn--brand:hover {
+  background: var(--se-color-brand-hover);
+  border-color: var(--se-color-brand-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--se-shadow-sm);
+}
+
+.se-btn--success { background: var(--se-color-success); color: var(--se-color-on-success); border-color: var(--se-color-success); }
+.se-btn--warning { background: var(--se-color-warning); color: var(--se-color-on-warning); border-color: var(--se-color-warning); }
+.se-btn--danger  { background: var(--se-color-danger);  color: var(--se-color-on-danger);  border-color: var(--se-color-danger); }
+.se-btn--danger:hover  { background: var(--se-color-danger-hover); border-color: var(--se-color-danger-hover); }
+
+.se-btn--ghost   { background: transparent; color: var(--se-color-text-muted); }
+.se-btn--ghost:hover { background: var(--se-color-hover); }
+
+.se-btn--sm { height: 28px; min-width: 0; padding: 0 var(--se-s-3); font-size: var(--se-text-sm); }
+.se-btn--lg { height: var(--se-size-control); padding: 0 var(--se-s-5); font-size: var(--se-text-md); }
+.se-btn--icon { min-width: 0; width: var(--se-size-control-sm); padding: 0; }
+
+/* ---------------------------------------------------------------
+ * Cards / superficies
+ * --------------------------------------------------------------- */
+.se-card {
+  background: var(--se-color-surface);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-md);
+  box-shadow: var(--se-shadow-sm);
+  overflow: hidden;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.se-card--hover:hover { transform: translateY(-5px); box-shadow: var(--se-shadow-md); }
+.se-card--flat { box-shadow: none; }
+.se-card__header {
+  padding: var(--se-s-4);
+  font-weight: var(--se-weight-medium);
+  background: var(--se-color-brand);
+  color: var(--se-color-on-brand);
+}
+.se-card__body { padding: var(--se-s-4); }
+
+/* ---------------------------------------------------------------
+ * Tablas
+ * --------------------------------------------------------------- */
+.se-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--se-color-surface);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-md);
+  overflow: hidden;
+  box-shadow: var(--se-shadow-sm);
+}
+.se-table thead th {
+  background: var(--se-color-table-header-bg);
+  color: var(--se-color-table-header-text);
+  font-weight: var(--se-weight-medium);
+  text-align: left;
+  white-space: nowrap;
+  padding: var(--se-s-3) var(--se-s-3);
+  text-transform: none;
+}
+.se-table tbody td { padding: var(--se-s-3); border-top: 1px solid var(--se-color-border); }
+.se-table tbody tr { transition: background-color .15s ease; }
+.se-table tbody tr:hover { background: var(--se-color-table-row-hover); }
+
+/* ---------------------------------------------------------------
+ * Badges / pills
+ * --------------------------------------------------------------- */
+.se-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--se-s-1);
+  padding: 6px 12px;
+  border-radius: var(--se-r-full);
+  font-size: var(--se-text-xs);
+  font-weight: var(--se-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.se-badge--success { background: var(--se-color-success-subtle); color: var(--se-color-success-strong); border-color: var(--se-color-success-strong); }
+.se-badge--warning { background: var(--se-color-warning-subtle); color: var(--se-color-warning-strong); border-color: var(--se-color-warning-strong); }
+.se-badge--danger  { background: var(--se-color-danger-subtle);  color: var(--se-color-danger-strong);  border-color: var(--se-color-danger-strong); }
+.se-badge--info    { background: var(--se-color-info-subtle);    color: var(--se-color-info-strong);    border-color: var(--se-color-info-strong); }
+.se-badge--brand   { background: var(--se-color-brand-subtle);   color: var(--se-color-primary);        border-color: var(--se-color-brand); }
+
+.se-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--se-s-1);
+  height: 22px;
+  padding: 0 var(--se-s-2);
+  border-radius: var(--se-r-full);
+  font-size: var(--se-text-xs);
+  font-weight: var(--se-weight-medium);
+  background: var(--se-color-surface-muted);
+  color: var(--se-color-text-muted);
+  border: 1px solid var(--se-color-border);
+}
+
+/* ---------------------------------------------------------------
+ * Formularios
+ * --------------------------------------------------------------- */
+.se-input, .se-select, .se-textarea {
+  width: 100%;
+  height: var(--se-size-control);
+  padding: 0 var(--se-s-3);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-sm);
+  background: var(--se-color-surface);
+  color: var(--se-color-text);
+  font-family: var(--se-font-sans);
+  font-size: var(--se-text-base);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.se-textarea { height: auto; padding: var(--se-s-3); }
+.se-input:focus, .se-select:focus, .se-textarea:focus {
+  border-color: var(--se-color-brand);
+  box-shadow: 0 0 0 3px var(--se-color-focus-ring);
+}
+.se-input::placeholder { color: var(--se-color-text-subtle); }
+.se-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--se-color-text-muted);
+  font-size: var(--se-text-sm);
+  font-weight: var(--se-weight-medium);
+}
+
+/* Floating label (label sobre el borde del input) */
+.se-field { position: relative; }
+.se-field > .se-input { padding-top: 6px; }
+.se-field > label {
+  position: absolute;
+  top: -9px;
+  left: var(--se-s-3);
+  padding: 0 6px;
+  background: var(--se-color-surface);
+  color: var(--se-color-text-subtle);
+  font-size: var(--se-text-sm);
+}
+
+/* ---------------------------------------------------------------
+ * Búsqueda (input con icono lupa + reset)
+ * --------------------------------------------------------------- */
+.se-search { position: relative; display: inline-flex; align-items: center; width: 100%; }
+.se-search > input {
+  width: 100%;
+  height: var(--se-size-control-sm);
+  padding: 0 30px 0 32px;
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-full);
+  background: var(--se-color-surface);
+  color: var(--se-color-text);
+  font-size: var(--se-text-base);
+  outline: none;
+}
+.se-search > input:focus { border-color: var(--se-color-brand); box-shadow: 0 0 0 3px var(--se-color-focus-ring); }
+.se-search__icon { position: absolute; left: 12px; color: var(--se-color-text-subtle); pointer-events: none; font-size: 14px; }
+.se-search__reset { position: absolute; right: 8px; color: var(--se-color-text-subtle); cursor: pointer; text-decoration: none; }
+.se-search__reset:hover { color: var(--se-color-text); }
+
+/* ---------------------------------------------------------------
+ * Dropdown / submenú (genérico, reutilizable)
+ * El posicionamiento dinámico lo hace navbar.js; aquí solo el look.
+ * --------------------------------------------------------------- */
+.se-dropdown { position: relative; }
+.se-submenu {
+  min-width: 240px;
+  margin: 0;
+  padding: var(--se-s-2) 0;
+  list-style: none;
+  background: var(--se-color-surface);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-md);
+  box-shadow: var(--se-shadow-lg);
+  /* Oculto por defecto; navbar.js / :hover añaden .se-submenu--show */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+.se-submenu--show { opacity: 1; visibility: visible; transform: translateY(0); }
+.se-submenu__item { display: block; width: 100%; }
+.se-submenu__link {
+  display: flex;
+  align-items: center;
+  gap: var(--se-s-3);
+  padding: 12px 20px;
+  color: var(--se-color-text);
+  text-decoration: none;
+  font-size: var(--se-text-base);
+  font-weight: var(--se-weight-medium);
+  white-space: nowrap;
+  transition: background-color .15s ease, padding-left .15s ease, color .15s ease;
+}
+.se-submenu__link:hover {
+  background: var(--se-color-surface-variant);
+  color: var(--se-color-brand-hover);
+  padding-left: 25px;
+}
+.se-submenu__item:not(:last-child) .se-submenu__link { border-bottom: 1px solid var(--se-color-border); }
+
+/* ---------------------------------------------------------------
+ * Modal — jerarquía de z-index coherente (reutilizable)
+ * --------------------------------------------------------------- */
+.se-modal-backdrop { z-index: 10000; position: fixed; }
+.se-modal { z-index: 10050; position: fixed; }
+.se-modal__dialog { z-index: 10051; position: relative; }
+.se-modal__content { background: var(--se-color-surface); color: var(--se-color-text); border-radius: var(--se-r-md); box-shadow: var(--se-shadow-lg); }
+.se-modal .se-dropdown-menu, .se-modal .dropdown-menu { z-index: 10060; }
+
+/* ---------------------------------------------------------------
+ * Alertas / toasts
+ * --------------------------------------------------------------- */
+.se-alert {
+  border-radius: var(--se-r-sm);
+  box-shadow: var(--se-shadow-lg);
+  padding: var(--se-s-3) var(--se-s-4);
+  border: 1px solid var(--se-color-border);
+  background: var(--se-color-surface);
+  color: var(--se-color-text);
+}
+.se-alert--success { background: var(--se-color-success-subtle); color: var(--se-color-success-strong); }
+.se-alert--warning { background: var(--se-color-warning-subtle); color: var(--se-color-warning-strong); }
+.se-alert--danger  { background: var(--se-color-danger-subtle);  color: var(--se-color-danger-strong); }
+.se-alert--info    { background: var(--se-color-info-subtle);    color: var(--se-color-info-strong); }
