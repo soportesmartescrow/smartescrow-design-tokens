@@ -37,6 +37,7 @@
   --bs-body-color: var(--se-color-text);
   --bs-border-color: var(--se-color-border);
   --bs-border-radius: var(--se-r-sm);
+  --bs-body-font-family: var(--se-font-sans);   /* Bootstrap 5 usa esta var → Poppins en EA */
   --bs-link-color: var(--se-color-primary);
   --bs-link-hover-color: var(--se-color-brand-hover);
 
@@ -62,8 +63,9 @@
 
 /* Tipografía Poppins y FONDO gris claro (Pronto Pago NO usa blanco puro; las superficies/cards
  * sí son blancas). En dark, --se-color-bg es slate oscuro (tampoco negro puro). */
-body, button, input, select, textarea, .btn, .form-control, .main-content {
-  font-family: var(--se-font-sans);
+body, button, input, select, textarea, .btn, .form-control, .form-select,
+.main-content, .card, .card-title, .card-text, .table, .menu-item-label, .dropdown-item {
+  font-family: var(--se-font-sans) !important;
 }
 body { color: var(--se-color-text); }
 body,

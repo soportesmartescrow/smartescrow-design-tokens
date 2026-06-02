@@ -1,0 +1,13 @@
+/* ============================================================
+ * SmartEscrow Design System — Carga de fuentes
+ * ------------------------------------------------------------
+ * Carga Poppins (principal) y Roboto (fallback) — las fuentes de
+ * --se-font-sans — desde Google Fonts, para plataformas que NO las
+ * tengan ya empaquetadas localmente (p. ej. EasyAdmin). En la SPA
+ * Vue/Vuetify, Poppins/Roboto ya se cargan localmente vía @font-face,
+ * así que este archivo no es necesario allí.
+ *
+ * @import debe ir al PRINCIPIO de la hoja final; en EasyAdmin se
+ * concatena como primer fichero de se-admin.css (ver bin/build-admin-assets.mjs).
+ * ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
