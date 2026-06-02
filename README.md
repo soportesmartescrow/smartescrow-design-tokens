@@ -384,7 +384,7 @@ git tag v1.0.0 && git push --tags     # las versiones se referencian por tag
 ### Opción B · Registry npm (si se habilita uno, p. ej. GitHub Packages)
 ```bash
 # autenticarse en el registry (~/.npmrc con //npm.pkg.github.com/:_authToken=...)
-npm publish        # 'prepare' regenera tokens.css antes de empaquetar
+npm run build && npm publish   # regenera tokens.css y publica (no hay 'prepare')
 ```
 `publishConfig.access` está en `restricted` (paquete privado). Cámbialo a `public` solo si procede.
 
