@@ -30,6 +30,7 @@
   background: var(--se-navbar-bg);
   color: var(--se-navbar-fg);
   border-bottom: 1px solid var(--se-navbar-border);
+  box-shadow: var(--se-navbar-shadow);
 }
 
 /* Marca / logo (proporcionado) */
@@ -75,11 +76,11 @@
 .se-navbar__item.is-active > a::after {
   content: '';
   position: absolute;
-  left: var(--se-s-4);
-  right: var(--se-s-4);
+  left: 25%;
+  right: 25%;
   bottom: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
+  height: 2px;
+  border-radius: 0;
   background: var(--se-navbar-active);
 }
 

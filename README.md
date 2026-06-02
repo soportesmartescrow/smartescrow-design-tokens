@@ -627,6 +627,27 @@ Sobrescribe los tokens donde quieras (p. ej. una navbar oscura puntual):
 ```
 El **modo oscuro global** ya trae sus propios valores `--se-navbar-*` (vía `[data-se-theme="dark"]`).
 
+### Especificación exacta (fuente · iconos · colores → tokens)
+
+| Aspecto | Valor | Token / nota |
+|---|---|---|
+| **Fuente** | **Poppins** (fallback Roboto, system-ui) | `--se-font-sans` |
+| **Iconos** (SPA Vue/Vuetify) | **Material Design Icons (MDI)** — `@mdi/font` ^7.4.47 | clases `mdi mdi-*` (Vuetify) |
+| **Iconos** (EasyAdmin) | **Font Awesome 6.4.0** | clases `fa fa-*` / `fa-solid` |
+| Fondo navbar | blanco / dark slate | `--se-navbar-bg` |
+| Texto e iconos del menú | slate / claro en dark | `--se-navbar-fg` |
+| Indicador activo (subrayado) | corto, **2px**, **cuadrado**; slate (light) / verde (dark) | `--se-navbar-active` |
+| Hover de ítem | wash sutil | `--se-navbar-hover` |
+| Borde inferior | gris / slate | `--se-navbar-border` |
+| Sombra bajo la navbar | ≈ elevation 1 | `--se-navbar-shadow` |
+| Scroll horizontal | línea fina oscura (4px) | `--se-navbar-scrollbar` |
+| Alto | 62px | `--se-size-navbar` |
+| Acento de marca (botones/CTA) | verde `#87bd78` | `--se-color-brand` |
+| Primario (slate) | `#36414f` | `--se-color-primary` |
+
+Ítems en **MAYÚSCULAS** con `letter-spacing`. Para re-temar SOLO la navbar, sobrescribe los
+`--se-navbar-*` (ver "Re-temarla"); el resto de la app no se ve afectado.
+
 ### En EasyAdmin
 No necesitas el markup `.se-navbar`: sigue la **§12**. El adaptador ya reproduce esta navbar sobre
 `.main-header`/`.main-menu`/`.main-menu-item`/`.submenu` con los mismos `--se-navbar-*`.

@@ -102,7 +102,7 @@ article.content,
   padding-right: 0 !important;
   background: var(--se-navbar-bg) !important;
   color: var(--se-navbar-fg);
-  box-shadow: none !important;
+  box-shadow: var(--se-navbar-shadow) !important;
   border-bottom: 1px solid var(--se-navbar-border);
   overflow: visible !important;
 }
@@ -151,14 +151,15 @@ nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; 
 a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); }
 .main-menu-item a:hover, a.menu-item-contents:hover { background: var(--se-navbar-hover) !important; }
 .main-menu-item.active a { font-weight: var(--se-weight-medium); }
+/* Indicador activo: corto, fino y cuadrado (como el slider de Pronto Pago) */
 .main-menu-item.active::after, #main-menu .menu .menu-item.active:after {
   content: '';
   position: absolute;
-  left: var(--se-s-3);
-  right: var(--se-s-3);
+  left: 25%;
+  right: 25%;
   bottom: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
+  height: 2px;
+  border-radius: 0;
   background: var(--se-navbar-active);
 }
 .menu-icon { margin-right: var(--se-s-2); font-size: 15px; }
@@ -188,21 +189,23 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
 }
 .user-name, .dropdown-settings-button, span.user-name { color: var(--se-navbar-fg) !important; }
 
-/* Avatar de usuario: círculo slate con icono blanco (como en Pronto Pago) */
+/* Avatar de usuario: círculo de CONTORNO slate con icono slate (como mdi-account-circle de Pronto Pago) */
 .user-avatar {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50% !important;
-  background: var(--se-color-primary);
-  color: var(--se-color-on-primary);
+  background: transparent;
+  color: var(--se-color-primary);
+  border: 1.5px solid var(--se-color-primary);
   overflow: hidden;
   flex: 0 0 auto;
 }
-.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-color-on-primary); }
-img.user-avatar { object-fit: cover; }
+.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-color-primary); }
+/* Si el usuario tiene logo/foto, se muestra rellenando el círculo (sin borde) */
+img.user-avatar { object-fit: cover; border: 0; background: var(--se-color-surface-variant); }
 .user-details { display: inline-flex; align-items: center; gap: var(--se-s-2); color: var(--se-navbar-fg); }
 .dropdown-toggle.user-details { margin-left: 1.5rem !important; }
 span.user-name {
@@ -404,9 +407,29 @@ div.form-widget a.content-search-reset { display: none; }
 /* ------------------------------------------------------------------
  * 11. Footer
  * ------------------------------------------------------------------ */
-.main-footer { background: var(--se-color-footer-bg); color: var(--se-color-footer-text); box-shadow: 0 -2px 10px var(--se-color-overlay-soft); margin-top: 2rem; }
-.footer-links a { color: var(--se-color-footer-text); transition: all .2s ease; font-weight: var(--se-weight-medium); }
+.main-footer {
+  background: var(--se-color-footer-bg);
+  color: var(--se-color-footer-text);
+  box-shadow: 0 -2px 10px var(--se-color-overlay-soft);
+  margin-top: 2rem;
+  padding: var(--se-s-4);
+  text-align: center;
+}
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--se-s-4);
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.footer-logo { display: flex; align-items: center; gap: var(--se-s-2); font-weight: var(--se-weight-medium); }
+.footer-links { display: flex; gap: var(--se-s-5); flex-wrap: wrap; }
+.footer-links a { color: var(--se-color-footer-text); transition: all .2s ease; font-weight: var(--se-weight-medium); text-decoration: none; }
 .footer-links a:hover { color: var(--se-color-brand); text-decoration: underline; }
+.footer-copyright { font-size: var(--se-text-sm); opacity: 0.9; }
+@media (max-width: 768px) { .footer-content { flex-direction: column; gap: var(--se-s-3); } }
 
 /* ------------------------------------------------------------------
  * 12. Tres puntos / overlay / menú móvil (posicionamiento conservado)

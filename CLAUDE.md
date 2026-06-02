@@ -36,6 +36,10 @@ instalar §11).
 - `components.css` — componentes genéricos reutilizables (`.se-*`) sobre tokens. **A mano.**
 - `navbar.css` + `navbar.js` — patrón sidebar→navbar: CSS de posicionamiento + mecánica vanilla
   parametrizable (mover DOM, posicionar submenús, responsive). **Sin negocio ni fetch.**
+  - **Especificación (detalle README §13):** fuente **Poppins** (`--se-font-sans`); iconos
+    **MDI `@mdi/font` ^7.4.47** (SPA Vue/Vuetify) y **Font Awesome 6.4.0** (EasyAdmin); colores vía
+    `--se-navbar-{bg,fg,active,hover,border,scrollbar,shadow}` + `--se-size-navbar` (62px); acento
+    `--se-color-brand` (#87bd78), primario `--se-color-primary` (#36414f). Indicador activo corto/2px/cuadrado.
 - `adapters/easyadmin.css` — adaptador EasyAdmin: mapea `--bs-*` y selectores nativos a tokens/
   componentes/navbar. Los demás archivos `components/navbar` NO dependen de EasyAdmin (reutilizables).
 - `README.md` — doc completa (§8 componentes/navbar/adaptadores).

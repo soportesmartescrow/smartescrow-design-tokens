@@ -215,6 +215,7 @@ export const semantic = {
     'navbar-border':        ref('gray.300'),   // borde inferior
     'navbar-scrollbar':     ref('slate.600'),  // línea fina del scroll horizontal
     'navbar-brand':         ref('green.500'),  // acentos de marca dentro de la navbar
+    'navbar-shadow':        raw('0 2px 6px rgba(0, 0, 0, 0.10)'), // sombra bajo la navbar (≈ elevation 1)
 
     /* Superficies / texto / bordes */
     'color-bg':             ref('gray.50', { brand: 'bg' }),
@@ -296,6 +297,7 @@ export const semantic = {
     'navbar-border':        ref('slate.550'),
     'navbar-scrollbar':     ref('gray.400'),
     'navbar-brand':         ref('green.500'),
+    'navbar-shadow':        raw('0 2px 6px rgba(0, 0, 0, 0.40)'),
 
     'color-bg':             ref('slate.950', { brand: 'bg' }),
     'color-canvas':         ref('slate.950'),
