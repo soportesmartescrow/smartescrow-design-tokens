@@ -50,12 +50,11 @@
   list-style: none;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--se-navbar-scrollbar) transparent;
+  /* Scrollbar oculto (como ProntoPago) para no tapar el indicador activo */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.se-navbar__menu::-webkit-scrollbar { height: 4px; }
-.se-navbar__menu::-webkit-scrollbar-track { background: transparent; }
-.se-navbar__menu::-webkit-scrollbar-thumb { background: var(--se-navbar-scrollbar); border-radius: var(--se-r-full); }
+.se-navbar__menu::-webkit-scrollbar { display: none; height: 0; width: 0; }
 
 .se-navbar__item { position: relative; display: flex; white-space: nowrap; }
 .se-navbar__item > a {

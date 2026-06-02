@@ -185,7 +185,7 @@
   --se-navbar-border: var(--se-gray-300);
   --se-navbar-scrollbar: var(--se-slate-600);
   --se-navbar-brand: var(--se-green-500);
-  --se-navbar-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+  --se-navbar-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   --se-color-bg: var(--brand-bg, var(--se-gray-50));
   --se-color-canvas: var(--se-gray-50);
   --se-color-surface: var(--se-gray-0);
@@ -261,7 +261,7 @@
   --se-navbar-border: var(--se-slate-550);
   --se-navbar-scrollbar: var(--se-gray-400);
   --se-navbar-brand: var(--se-green-500);
-  --se-navbar-shadow: 0 2px 6px rgba(0, 0, 0, 0.40);
+  --se-navbar-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   --se-color-bg: var(--brand-bg, var(--se-slate-950));
   --se-color-canvas: var(--se-slate-950);
   --se-color-surface: var(--se-slate-900);

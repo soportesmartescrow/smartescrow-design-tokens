@@ -132,13 +132,11 @@ nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; 
   list-style: none;
   overflow-x: auto;
   overflow-y: hidden;
-  /* Scroll horizontal como línea fina oscura (igual que navbar.css) */
-  scrollbar-width: thin;
-  scrollbar-color: var(--se-navbar-scrollbar) transparent;
+  /* Scrollbar oculto (como ProntoPago) para que se aprecie el indicador activo */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.main-menu::-webkit-scrollbar, .main-menu-wrapper .main-menu::-webkit-scrollbar { height: 4px; }
-.main-menu::-webkit-scrollbar-track { background: transparent; }
-.main-menu::-webkit-scrollbar-thumb { background: var(--se-navbar-scrollbar); border-radius: var(--se-r-full); }
+.main-menu::-webkit-scrollbar, .main-menu-wrapper .main-menu::-webkit-scrollbar { display: none; height: 0; width: 0; }
 .main-menu li, .main-menu-wrapper .main-menu li { display: flex; }
 .main-menu-item { position: relative; margin: 0 var(--se-s-1); white-space: nowrap; transition: all .2s ease; }
 .main-menu-item a, a.menu-item-contents {
@@ -198,12 +196,13 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
   height: 30px;
   border-radius: 50% !important;
   background: transparent;
-  color: var(--se-color-primary);
-  border: 1.5px solid var(--se-color-primary);
+  /* slate fijo del menú (NO --se-color-primary, que el branding del tenant pone verde) */
+  color: var(--se-navbar-fg);
+  border: 1.5px solid var(--se-navbar-fg);
   overflow: hidden;
   flex: 0 0 auto;
 }
-.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-color-primary); }
+.user-avatar svg, .user-avatar i { width: 18px; height: 18px; font-size: 16px; color: var(--se-navbar-fg); }
 /* Si el usuario tiene logo/foto, se muestra rellenando el círculo (sin borde) */
 img.user-avatar { object-fit: cover; border: 0; background: var(--se-color-surface-variant); }
 .user-details { display: inline-flex; align-items: center; gap: var(--se-s-2); color: var(--se-navbar-fg); }
