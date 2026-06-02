@@ -173,6 +173,7 @@ a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); 
 
 /* Ocultar/mover piezas nativas de EasyAdmin */
 .header-right { display: none !important; }
+.toggle-sidebar { display: none !important; }   /* burger nativo de EA: inútil con sidebar→navbar */
 .content-top.ea-search-enabled, .content-top.ea-search-disabled { display: none !important; }
 body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > div > a { display: none !important; }
 .admin-options-gg {
@@ -448,12 +449,36 @@ div.form-widget a.content-search-reset { display: none; }
 
 @media (max-width: 1032px) {
   .main-menu-wrapper { display: none !important; }
+  .toggle-sidebar { display: none !important; }   /* ocultar burger nativo de EA (3 líneas, solo hacía shadow) */
   .three-dots-menu { display: flex; }
   .custom-mobile-menu { display: block; }
-  .custom-mobile-menu .main-menu { flex-direction: column; overflow-x: visible; width: 100%; }
-  .custom-mobile-menu .main-menu-item { margin: 0; width: 100%; }
-  .custom-mobile-menu .main-menu-item a { padding: 1rem; width: 100%; justify-content: flex-start; }
-  .custom-mobile-menu .submenu { position: static !important; box-shadow: none; background: var(--se-color-surface-variant); width: 100%; }
+  /* El <ul class="main-menu"> del móvil hereda la regla horizontal del nav de escritorio;
+     hay que devolverlo a columna y SIN clipear a 62px (si no, solo se ve el primer ítem). */
+  .custom-mobile-menu .main-menu {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100%;
+  }
+  .custom-mobile-menu .main-menu li { display: block; width: 100%; }
+  .custom-mobile-menu .main-menu-item { position: relative; margin: 0; width: 100%; white-space: normal; }
+  .custom-mobile-menu .main-menu-item a,
+  .custom-mobile-menu .menu-item-contents {
+    height: auto !important;
+    padding: 1rem !important;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .custom-mobile-menu .main-menu-item.active::after { display: none; }  /* sin subrayado en móvil */
+  .custom-mobile-menu .submenu {
+    position: static !important;
+    display: none;
+    box-shadow: none;
+    border: 0;
+    background: var(--se-color-surface-variant);
+    width: 100%;
+  }
+  .custom-mobile-menu .submenu.active { display: block; }
 }
 
 /* ------------------------------------------------------------------
