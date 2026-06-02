@@ -1,24 +1,22 @@
 /* ============================================================
  * SmartEscrow — Navbar (patrón "sidebar → header horizontal")
- * ------------------------------------------------------------
- * Primitivas de POSICIONAMIENTO genéricas para convertir una barra
- * lateral vertical en una navbar horizontal pegada al header.
- * Reutilizable por cualquier sistema con las clases .se-navbar*.
+ * ============================================================
+ * FUENTE ÚNICA de la navbar. Misma estética que el header de Pronto Pago:
+ * header blanco, texto slate, subrayado slate en el activo, borde inferior
+ * fino, scroll horizontal como línea fina oscura, logo proporcionado.
  *
- * El estilo (colores/sombras) sale de los tokens; el comportamiento
- * (mover nodos, posicionar submenús, responsive) lo aporta navbar.js.
+ * Valores: tokens `--se-navbar-*` (definidos en tokens.css; ver §Navbar).
+ * Comportamiento (mover DOM, submenús, responsive): navbar.js / navbar.global.js.
  *
- * Para EasyAdmin, adapters/easyadmin.css aplica estas mismas reglas
- * sobre sus selectores nativos (.sidebar, .main-menu, .submenu…).
+ * Úsala con las clases `.se-navbar*` (ver navbar.html). EasyAdmin la aplica
+ * sobre sus selectores nativos vía adapters/easyadmin.css con los MISMOS tokens.
  * ============================================================ */
 
 /* Contenedor raíz en columna (header arriba, contenido debajo) */
 .se-navbar-layout { display: flex; flex-direction: column; min-height: 100vh; }
-
-/* La "sidebar" deja de ocupar columna: se vuelve contenido en línea */
 .se-navbar-host { display: contents; }
 
-/* Barra superior sticky */
+/* Barra superior sticky — blanca, minimalista */
 .se-navbar {
   position: sticky;
   top: 0;
@@ -28,17 +26,18 @@
   justify-content: space-between;
   width: 100%;
   height: var(--se-size-navbar, 62px);
-  padding: 0 var(--se-s-4);
-  background: var(--se-color-primary);
-  color: var(--se-color-on-primary);
-  box-shadow: var(--se-shadow-sm);
+  padding: 0 var(--se-s-5);
+  background: var(--se-navbar-bg);
+  color: var(--se-navbar-fg);
+  border-bottom: 1px solid var(--se-navbar-border);
 }
 
-/* Zona de marca (logo) */
+/* Marca / logo (proporcionado) */
 .se-navbar__brand { display: flex; align-items: center; gap: var(--se-s-2); flex: 0 0 auto; }
-.se-navbar__brand img { max-height: 40px; }
+.se-navbar__brand img { height: 34px; max-height: 34px; width: auto; transition: transform .2s ease; }
+.se-navbar__brand:hover img { transform: scale(1.05); }
 
-/* Menú horizontal scrollable */
+/* Menú horizontal scrollable con scrollbar fina (línea oscura) */
 .se-navbar__menu {
   display: flex;
   align-items: center;
@@ -51,7 +50,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
+  scrollbar-color: var(--se-navbar-scrollbar) transparent;
 }
+.se-navbar__menu::-webkit-scrollbar { height: 4px; }
+.se-navbar__menu::-webkit-scrollbar-track { background: transparent; }
+.se-navbar__menu::-webkit-scrollbar-thumb { background: var(--se-navbar-scrollbar); border-radius: var(--se-r-full); }
+
 .se-navbar__item { position: relative; display: flex; white-space: nowrap; }
 .se-navbar__item > a {
   display: flex;
@@ -59,32 +63,30 @@
   gap: var(--se-s-2);
   height: 100%;
   padding: 0 var(--se-s-4);
-  color: inherit;
+  color: var(--se-navbar-fg);
   text-decoration: none;
   text-transform: uppercase;
   font-weight: var(--se-weight-medium);
   font-size: var(--se-text-base);
   letter-spacing: 0.04em;
 }
-.se-navbar__item > a:hover { background: var(--se-color-hover); }
-.se-navbar__item.is-active > a {
-  position: relative;
-}
+.se-navbar__item > a:hover { background: var(--se-navbar-hover); }
+.se-navbar__item.is-active > a { position: relative; }
 .se-navbar__item.is-active > a::after {
   content: '';
   position: absolute;
-  left: 15%;
+  left: var(--se-s-4);
+  right: var(--se-s-4);
   bottom: 0;
-  width: 70%;
   height: 3px;
   border-radius: 3px 3px 0 0;
-  background: var(--se-color-brand);
+  background: var(--se-navbar-active);
 }
 
-/* Zona de acciones a la derecha (usuario, ajustes) */
+/* Acciones a la derecha (usuario, ajustes) */
 .se-navbar__actions { display: flex; align-items: center; flex: 0 0 auto; margin-left: auto; gap: var(--se-s-2); }
 
-/* Submenús: posicionados por navbar.js como position:fixed para escapar del header */
+/* Submenús: posicionados por navbar.js como fixed para escapar del header */
 .se-navbar__submenu { position: fixed; z-index: 9800; }
 
 /* Botón "tres puntos" (solo móvil) */
@@ -99,7 +101,7 @@
   cursor: pointer;
   padding: 0;
 }
-.se-navbar__toggle span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.se-navbar__toggle span { width: 6px; height: 6px; border-radius: 50%; background: var(--se-navbar-fg); }
 
 /* Overlay y panel móvil */
 .se-navbar__overlay {
@@ -118,8 +120,8 @@
   width: 80%;
   max-width: 300px;
   height: 100vh;
-  background: var(--se-color-primary);
-  color: var(--se-color-on-primary);
+  background: var(--se-navbar-bg);
+  color: var(--se-navbar-fg);
   z-index: 2000;
   overflow-y: auto;
   padding-top: var(--se-size-navbar, 62px);

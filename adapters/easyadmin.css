@@ -39,19 +39,19 @@
   --bs-link-color: var(--se-color-primary);
   --bs-link-hover-color: var(--se-color-brand-hover);
 
-  /* Variables legacy usadas por las plantillas de wallet → tokens */
-  --sidebar-bg: var(--se-color-primary);
+  /* Variables legacy usadas por las plantillas de wallet → tokens (navbar = blanca) */
+  --sidebar-bg: var(--se-navbar-bg);
   --primary-color: var(--se-color-primary);
   --secondary-color: var(--se-color-brand);
   --button-primary-bg: var(--se-color-primary);
   --button-success-bg: var(--se-color-brand);
-  --text-color: var(--se-color-on-primary);
+  --text-color: var(--se-navbar-fg);
   --text-muted: var(--se-color-text-muted);
   --body-bg: var(--se-color-bg);
-  --sidebar-menu-color: var(--se-color-on-primary);
-  --sidebar-menu-item-hover-bg: var(--se-color-hover);
-  --sidebar-menu-active-item-color: var(--se-color-on-primary);
-  --sidebar-menu-active-item-bg: var(--se-color-hover);
+  --sidebar-menu-color: var(--se-navbar-fg);
+  --sidebar-menu-item-hover-bg: var(--se-navbar-hover);
+  --sidebar-menu-active-item-color: var(--se-navbar-active);
+  --sidebar-menu-active-item-bg: var(--se-navbar-hover);
   --form-switch-bg: var(--se-color-brand);
   --form-switch-border-color: var(--se-color-border);
   --font-size-sm: var(--se-text-base);
@@ -74,27 +74,36 @@ body { font-family: var(--se-font-sans); color: var(--se-color-text); }
   height: auto;
   min-height: 0;
   z-index: 100;
-  background: var(--se-color-primary);
+  background: var(--se-navbar-bg);
 }
 .sidebar { display: contents !important; overflow: inherit !important; }
 
+/* Header = navbar canónica (mismos tokens que navbar.css): blanco, texto slate, borde fino */
 .main-header {
   height: var(--se-size-navbar);
   display: flex !important;
   align-items: center;
   justify-content: space-between !important;
-  padding: 0 var(--se-s-4);
+  padding: 0 var(--se-s-5);
   padding-right: 0 !important;
-  background: var(--se-color-primary) !important;
-  color: var(--se-color-on-primary);
-  box-shadow: var(--se-shadow-sm) !important;
+  background: var(--se-navbar-bg) !important;
+  color: var(--se-navbar-fg);
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--se-navbar-border);
   overflow: visible !important;
 }
 
 .logo-menu-container { display: flex; align-items: center; gap: var(--se-s-2); }
 #header-logo, #header-logo img { display: flex; align-items: center; }
-#header-logo img { max-height: 40px; margin-right: var(--se-s-3); transition: transform .2s ease; }
-#header-logo:hover img { transform: scale(1.05); }
+/* Logo proporcionado (en el layout suele venir con height inline grande) */
+.logo-menu-container img, .logo-link img, #header-logo img {
+  max-height: 34px !important;
+  height: 34px !important;
+  width: auto !important;
+  margin-right: var(--se-s-3);
+  transition: transform .2s ease;
+}
+.logo-link:hover img, #header-logo:hover img { transform: scale(1.05); }
 
 /* Menú horizontal */
 nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; overflow: visible !important; }
@@ -109,28 +118,34 @@ nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; 
   list-style: none;
   overflow-x: auto;
   overflow-y: hidden;
+  /* Scroll horizontal como línea fina oscura (igual que navbar.css) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--se-navbar-scrollbar) transparent;
 }
+.main-menu::-webkit-scrollbar, .main-menu-wrapper .main-menu::-webkit-scrollbar { height: 4px; }
+.main-menu::-webkit-scrollbar-track { background: transparent; }
+.main-menu::-webkit-scrollbar-thumb { background: var(--se-navbar-scrollbar); border-radius: var(--se-r-full); }
 .main-menu li, .main-menu-wrapper .main-menu li { display: flex; }
 .main-menu-item { position: relative; margin: 0 var(--se-s-1); white-space: nowrap; transition: all .2s ease; }
 .main-menu-item a, a.menu-item-contents {
   display: flex;
   align-items: center;
   padding: var(--se-s-3) var(--se-s-3);
-  color: var(--se-color-on-primary);
+  color: var(--se-navbar-fg);
   text-decoration: none;
 }
-a.menu-item-contents { padding: 25px var(--se-s-3); }
-.main-menu-item a:hover, a.menu-item-contents:hover { background: var(--se-color-hover) !important; }
-.main-menu-item.active a { border-radius: var(--se-r-md); font-weight: var(--se-weight-medium); }
+a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); }
+.main-menu-item a:hover, a.menu-item-contents:hover { background: var(--se-navbar-hover) !important; }
+.main-menu-item.active a { font-weight: var(--se-weight-medium); }
 .main-menu-item.active::after, #main-menu .menu .menu-item.active:after {
   content: '';
   position: absolute;
-  left: 15%;
+  left: var(--se-s-3);
+  right: var(--se-s-3);
   bottom: 0;
-  width: 70%;
   height: 3px;
   border-radius: 3px 3px 0 0;
-  background: var(--se-color-brand);
+  background: var(--se-navbar-active);
 }
 .menu-icon { margin-right: var(--se-s-2); font-size: 15px; }
 .main-menu-wrapper .menu-item-label {
@@ -157,7 +172,7 @@ body > div.wrapper > div.sidebar-wrapper > aside > header > div.header-right > d
   text-transform: uppercase;
   font-weight: var(--se-weight-medium);
 }
-.user-name, .dropdown-settings-button, span.user-name { color: var(--se-color-on-primary) !important; }
+.user-name, .dropdown-settings-button, span.user-name { color: var(--se-navbar-fg) !important; }
 .dropdown-toggle.user-details { margin-left: 1.5rem !important; }
 span.user-name {
   white-space: normal; word-break: break-word; max-width: 20vw; text-align: left;
@@ -256,9 +271,17 @@ div > button#form_submit, button#form_schedule {
 /* ------------------------------------------------------------------
  * 5. Cards
  * ------------------------------------------------------------------ */
-.card { border-radius: var(--se-r-xs); overflow: hidden; transition: all .3s ease; }
-.card:hover { transform: translateY(-5px); box-shadow: var(--se-shadow-md); }
-.card-header { font-weight: var(--se-weight-medium); }
+/* Cards al estilo Pronto Pago: blancas, borde sutil, radio amplio, sombra suave, sin saltos */
+.card {
+  background: var(--se-color-surface);
+  border: 1px solid var(--se-color-border);
+  border-radius: var(--se-r-lg);
+  box-shadow: var(--se-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow .2s ease;
+}
+.card:hover { box-shadow: var(--se-shadow-md); }
+.card-header { font-weight: var(--se-weight-medium); background: var(--se-color-surface); border-bottom: 1px solid var(--se-color-border); }
 div.card > div.card-header { background-color: var(--se-color-brand) !important; }
 div.card > div.card-header > h2 { color: var(--se-color-on-brand); }
 
@@ -345,13 +368,13 @@ div.form-widget a.content-search-reset { display: none; }
  * 12. Tres puntos / overlay / menú móvil (posicionamiento conservado)
  * ------------------------------------------------------------------ */
 .three-dots-menu { display: none; flex-direction: column; justify-content: space-between; width: 6px; height: 24px; background: transparent; border: none; cursor: pointer; padding: 0; }
-.three-dots-menu span { width: 6px; height: 6px; background: var(--se-color-on-primary); border-radius: 50%; transition: all .3s linear; }
+.three-dots-menu span { width: 6px; height: 6px; background: var(--se-navbar-fg); border-radius: 50%; transition: all .3s linear; }
 .custom-overlay { display: none; position: fixed; inset: 0; background: var(--se-color-overlay); z-index: 1999; }
 .custom-overlay.active { display: block; }
 .custom-mobile-menu {
   display: none; position: fixed; top: 0; right: -100%;
   width: 80%; max-width: 300px; height: 100vh;
-  background: var(--se-color-primary); color: var(--se-color-on-primary);
+  background: var(--se-navbar-bg); color: var(--se-navbar-fg);
   z-index: 2000; overflow-y: auto; padding-top: var(--se-size-navbar);
   box-shadow: var(--se-shadow-lg); transition: right .3s ease;
 }

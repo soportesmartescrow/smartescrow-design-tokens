@@ -178,6 +178,13 @@
   --se-color-table-header-bg: var(--se-gray-100);
   --se-color-table-header-text: var(--se-slate-600);
   --se-color-table-row-hover: rgba(0, 0, 0, 0.03);
+  --se-navbar-bg: var(--se-gray-0);
+  --se-navbar-fg: var(--se-slate-600);
+  --se-navbar-active: var(--se-slate-600);
+  --se-navbar-hover: rgba(75, 75, 75, 0.05);
+  --se-navbar-border: var(--se-gray-300);
+  --se-navbar-scrollbar: var(--se-slate-600);
+  --se-navbar-brand: var(--se-green-500);
   --se-color-bg: var(--brand-bg, var(--se-gray-50));
   --se-color-surface: var(--se-gray-0);
   --se-color-surface-variant: var(--se-gray-100);
@@ -239,6 +246,13 @@
   --se-color-table-header-bg: var(--se-slate-800);
   --se-color-table-header-text: var(--se-gray-200);
   --se-color-table-row-hover: rgba(255, 255, 255, 0.04);
+  --se-navbar-bg: var(--se-slate-900);
+  --se-navbar-fg: var(--se-gray-200);
+  --se-navbar-active: var(--se-green-500);
+  --se-navbar-hover: rgba(255, 255, 255, 0.06);
+  --se-navbar-border: var(--se-slate-550);
+  --se-navbar-scrollbar: var(--se-gray-400);
+  --se-navbar-brand: var(--se-green-500);
   --se-color-bg: var(--brand-bg, var(--se-slate-950));
   --se-color-surface: var(--se-slate-900);
   --se-color-surface-variant: var(--se-slate-800);

@@ -1,0 +1,79 @@
+<!-- ============================================================
+     SmartEscrow — Navbar canónica (markup de referencia)
+     ------------------------------------------------------------
+     Copia esta estructura para obtener EXACTAMENTE la misma navbar
+     (estética Pronto Pago) en cualquier app. Requiere cargar antes:
+       tokens.css + components.css + navbar.css   (CSS)
+       navbar.js (ESM) o navbar.global.js (clásico)  (JS)
+     y luego inicializar la mecánica (ver el <script> del final).
+
+     Tokens que la gobiernan: --se-navbar-* (bg, fg, active, hover,
+     border, scrollbar, brand). Cambia esos tokens para re-temarla.
+     Modo oscuro: añade data-se-theme="dark" al <html>.
+     ============================================================ -->
+
+<div class="se-navbar-layout">
+
+  <!-- Overlay (móvil) -->
+  <div class="se-navbar__overlay" data-se-navbar-overlay></div>
+
+  <!-- Barra superior -->
+  <header class="se-navbar">
+
+    <!-- Marca / logo + botón móvil -->
+    <div class="se-navbar__brand">
+      <a href="/" aria-label="Inicio"><img src="/images/logo.svg" alt="Logo"></a>
+      <button class="se-navbar__toggle" data-se-navbar-toggle aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Menú horizontal (scrollable) -->
+    <ul class="se-navbar__menu">
+      <li class="se-navbar__item is-active">
+        <a href="/documentos"><i class="menu-icon fa fa-file"></i> Documentos</a>
+      </li>
+      <li class="se-navbar__item">
+        <a href="/acciones"><i class="menu-icon fa fa-bell"></i> Acciones</a>
+      </li>
+      <!-- Item con submenú (se posiciona como fixed vía navbar.js) -->
+      <li class="se-navbar__item">
+        <a href="#"><i class="menu-icon fa fa-exchange"></i> Transferencias</a>
+        <ul class="se-navbar__submenu se-submenu">
+          <li class="se-submenu__item"><a class="se-submenu__link" href="/t/wallet">Wallet a Wallet</a></li>
+          <li class="se-submenu__item"><a class="se-submenu__link" href="/t/banco">Transferencia bancaria</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Acciones a la derecha (usuario, ajustes) -->
+    <div class="se-navbar__actions">
+      <a href="/perfil"><i class="fa fa-user-circle"></i> Usuario</a>
+    </div>
+  </header>
+
+  <!-- Panel móvil (se muestra < 1032px) -->
+  <nav class="se-navbar__mobile" data-se-navbar-mobile>
+    <ul class="se-navbar__menu">
+      <li class="se-navbar__item"><a href="/documentos">Documentos</a></li>
+      <li class="se-navbar__item"><a href="/acciones">Acciones</a></li>
+    </ul>
+  </nav>
+
+  <!-- Tu contenido va aquí -->
+  <main><!-- ... --></main>
+</div>
+
+<!-- Inicialización de la mecánica (mover DOM si hace falta, submenús, responsive).
+     Con bundler:
+       import { initNavbar } from '@smartescrow/design-system/navbar.js';
+     Sin bundler (clásico):
+       <script src="/path/navbar.global.js"></script>   (define window.SeNavbar)
+-->
+<script>
+  SeNavbar.init({
+    submenus:   { item: '.se-navbar__item', panel: '.se-navbar__submenu', top: 56, offsetX: -20 },
+    responsive: { toggle: '[data-se-navbar-toggle]', overlay: '[data-se-navbar-overlay]', mobile: '[data-se-navbar-mobile]', openClass: 'is-open' },
+    // relocate: [...]  // solo si necesitas mover nodos al header (p. ej. EasyAdmin)
+  });
+</script>

@@ -206,6 +206,16 @@ export const semantic = {
     'color-table-header-text': ref('slate.600'),
     'color-table-row-hover':   raw('rgba(0, 0, 0, 0.03)'),
 
+    /* Navbar (fuente única de la barra superior — la usan navbar.css y el adaptador EasyAdmin).
+     * Estética Pronto Pago: header blanco, texto slate, subrayado activo slate, borde inferior fino. */
+    'navbar-bg':            ref('gray.0'),     // header blanco
+    'navbar-fg':            ref('slate.600'),  // texto/iconos del menú
+    'navbar-active':        ref('slate.600'),  // subrayado del item activo
+    'navbar-hover':         raw('rgba(75, 75, 75, 0.05)'),
+    'navbar-border':        ref('gray.300'),   // borde inferior
+    'navbar-scrollbar':     ref('slate.600'),  // línea fina del scroll horizontal
+    'navbar-brand':         ref('green.500'),  // acentos de marca dentro de la navbar
+
     /* Superficies / texto / bordes */
     'color-bg':             ref('gray.50', { brand: 'bg' }),
     'color-surface':        ref('gray.0'),
@@ -274,6 +284,15 @@ export const semantic = {
     'color-table-header-bg':   ref('slate.800'),
     'color-table-header-text': ref('gray.200'),
     'color-table-row-hover':   raw('rgba(255, 255, 255, 0.04)'),
+
+    /* Navbar (dark) */
+    'navbar-bg':            ref('slate.900'),
+    'navbar-fg':            ref('gray.200'),
+    'navbar-active':        ref('green.500'),
+    'navbar-hover':         raw('rgba(255, 255, 255, 0.06)'),
+    'navbar-border':        ref('slate.550'),
+    'navbar-scrollbar':     ref('gray.400'),
+    'navbar-brand':         ref('green.500'),
 
     'color-bg':             ref('slate.950', { brand: 'bg' }),
     'color-surface':        ref('slate.900'),

@@ -436,26 +436,204 @@ Sirve el CSS y enlázalo en el `<head>`:
 ```
 o cópialo a tu carpeta pública / pásalo por tu bundler. Modo oscuro: `<html data-se-theme="dark">`.
 
-### Caso 3 · EasyAdmin (esta plataforma u otra)
-EasyAdmin usa variables Bootstrap (`--bs-*`). Añade el CSS de tokens + un pequeño **adaptador**
-que mapee Bootstrap → tokens, p. ej. en un `admin.css` cargado por el `DashboardController`
-(`configureAssets()->addCssFile(...)`):
-```css
-@import "@smartescrow/design-system/tokens.css";
-:root {
-  --bs-primary:        var(--se-color-primary);
-  --bs-primary-rgb:    54, 65, 79;      /* #36414f */
-  --bs-body-bg:        var(--se-color-bg);
-  --bs-body-color:     var(--se-color-text);
-  --bs-border-color:   var(--se-color-border);
-  --bs-success:        var(--se-color-success);
-}
-```
-(Un preset/adaptador EasyAdmin completo está en la hoja de ruta, §12.)
+### Caso 3 · EasyAdmin
+Tiene su propia guía paso a paso (incluye el adaptador, la navbar y el override del layout):
+**ver §12**.
 
 ---
 
-## 12. Hoja de ruta
+## 12. Aplicar en un proyecto EasyAdmin (guía completa)
+
+> Esta sección es **probada en producción** (wallet). EasyAdmin (Symfony) ya usa Bootstrap 5, así
+> que el adaptador `easyadmin.css` lo **temática entero** reasignando `--bs-*` a tokens, y aplica
+> la transformación *sidebar → navbar horizontal* sobre los selectores nativos de EasyAdmin.
+
+### 12.1 Método recomendado: ficheros ESTÁTICOS (no WebpackEncoreBundle)
+
+**Importante (lección aprendida):** **no** uses `Assets->addWebpackEncoreEntry()` salvo que el
+proyecto ya tenga `WebpackEncoreBundle` instalado **y habilitado** y lo uses en otras partes. En
+EasyAdmin 4.24 nos encontramos con que: (a) si el bundle no está habilitado, la llamada es un
+**no-op silencioso** (no carga nada → se ven los botones azul/naranja por defecto de Bootstrap y
+vuelve la sidebar vertical); y (b) al habilitarlo, EA **escapaba** los tags (aparecían como texto).
+El mecanismo robusto y que EA siempre renderiza bien es `addCssFile()` / `addJsFile()` con ficheros
+en `public/`.
+
+### 12.2 Pasos
+
+**1) Instala el paquete** (por tag git, §11) o como carpeta hermana `file:`.
+
+**2) Genera los assets estáticos** desde el paquete con un pequeño script de build
+(`bin/build-admin-assets.mjs` en el proyecto):
+```js
+import { readFileSync, writeFileSync, copyFileSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const pkg = join(root, 'node_modules', '@smartescrow', 'design-system');
+const css = ['tokens.css', 'components.css', 'navbar.css', 'adapters/easyadmin.css']
+  .map(f => `/* ${f} */\n` + readFileSync(join(pkg, f), 'utf8')).join('\n\n');
+mkdirSync(join(root, 'public/css'), { recursive: true });
+writeFileSync(join(root, 'public/css/se-admin.css'), css);
+mkdirSync(join(root, 'public/js'), { recursive: true });
+copyFileSync(join(pkg, 'navbar.global.js'), join(root, 'public/js/se-navbar.js'));
+```
+Ejecuta `node bin/build-admin-assets.mjs`. Produce:
+- `public/css/se-admin.css` — tokens + componentes + navbar + adaptador EasyAdmin (todo en uno).
+- `public/js/se-navbar.js` — la mecánica de navbar (build clásica IIFE → `window.SeNavbar`).
+
+> El **orden de concatenación importa**: `tokens.css` primero (define las `--se-*`).
+> Re-ejecuta el script cada vez que actualices el paquete.
+
+**3) Init de la navbar** — `public/js/se-admin-init.js` (clásico, tras `se-navbar.js`). Pásale los
+selectores nativos de EasyAdmin de tu layout:
+```js
+(function () {
+  function start() {
+    if (!window.SeNavbar) return;
+    window.SeNavbar.init({
+      relocate: [                                  // mover piezas nativas al header
+        { from: '.navbar-custom-menu', to: '.admin-options-gg' },
+        { from: '.dropdown.dropdown-settings', to: '.admin-options-gg', index: 2 },
+        { from: '.form-action-search', to: '.search-options-gg' },
+      ],
+      submenus:   { item: '.main-menu-item', panel: '.submenu', top: 50, offsetX: -80 },
+      responsive: { toggle: '.three-dots-menu', overlay: '.custom-overlay', mobile: '.custom-mobile-menu' },
+    });
+  }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+})();
+```
+
+**4) La lógica de NEGOCIO va aparte** (`public/js/admin-business.js`): fetches, modales, timeouts,
+enlaces SSO, etc. **No** la metas en el kit. `navbar.js` solo mueve/posiciona DOM.
+
+**5) Cárgalo todo en `DashboardController::configureAssets()`** — el orden del JS importa
+(`se-navbar.js` define `window.SeNavbar` **antes** que el init):
+```php
+public function configureAssets(): Assets
+{
+    return parent::configureAssets()
+        ->addCssFile('css/se-admin.css')
+        ->addJsFile('js/se-navbar.js')
+        ->addJsFile('js/se-admin-init.js')
+        ->addJsFile('js/admin-business.js');
+}
+```
+
+**6) Override del layout** (`templates/bundles/EasyAdminBundle/layout.html.twig`) — el adaptador
+asume la estructura DOM por defecto de EasyAdmin (`.sidebar`, `.sidebar-wrapper`, `.main-header`,
+`.main-menu`, `.main-menu-item`, `.submenu`, `.header-right`) y unos contenedores donde
+`relocate` deja las piezas: añade en el header `.logo-menu-container`, `.three-dots-menu`,
+`.admin-options-gg`, `.search-options-gg`, y un `.custom-mobile-menu` + `.custom-overlay` para
+móvil. **No** definas el `<style>` estructural a mano: lo aporta el adaptador. Define solo el
+**branding** como contrato de tokens:
+```twig
+{% if app.user %}{% set b = get_branding() %}
+  <style>:root{
+    --brand-primary: {{ b.primary_color }};
+    --brand-bg: {{ b.background_color }};
+    --brand-text: {{ b.text_color }};
+  }</style>
+{% endif %}
+```
+
+### 12.3 Qué hace el adaptador (`adapters/easyadmin.css`)
+
+- **Temática Bootstrap 5** reasignando `--bs-primary/--bs-body-bg/--bs-border-color/…` a tokens →
+  botones, cards, tablas, forms y **modales** heredan la identidad sin tocar su HTML.
+- Mapea variables **legacy** que pudiera usar tu layout (`--sidebar-bg`, `--secondary-color`,
+  `--button-success-bg`, `--text-muted`…) a tokens.
+- Reimplementa el **posicionamiento** sidebar→navbar (sticky, menú horizontal, submenús `fixed`,
+  responsive) y los componentes propios de EA (badges de entidad, floating labels, select2,
+  búsqueda, footer) con tokens.
+- Mantiene la **jerarquía de z-index de modales** de EasyAdmin/Bootstrap.
+
+Si tu EasyAdmin usa selectores distintos, ajusta **solo** `adapters/easyadmin.css` (en el kit) —
+no toques `components.css`/`navbar.*`, que son agnósticos.
+
+### 12.4 Consideraciones generales de Symfony
+
+- **Rutas de assets:** `addCssFile('css/x')` resuelve a `public/css/x` vía `asset()`. Por eso los
+  ficheros generados van a `public/`.
+- **`cache:clear` obligatorio** tras cambiar `configureAssets()` (es PHP, va en caché):
+  `php bin/console cache:clear` (o `lando exec appserver -- php bin/console cache:clear`).
+- **Caché del navegador:** los ficheros estáticos **no llevan hash**; tras regenerarlos haz
+  **hard refresh** (Ctrl+Shift+R). En producción, versiónalos por ruta/cabeceras si necesitas
+  *cache busting* agresivo.
+- **Dark mode:** añade `data-se-theme="dark"` al `<html>` (los tokens semánticos hacen el resto).
+- **Branding por tenant:** ya cubierto con `--brand-*` (§5). El navbar/primario = `primary_color`.
+- **WebpackEncoreBundle (alternativa):** si tu proyecto SÍ lo tiene habilitado y funcionando,
+  puedes en su lugar crear un entry Encore que importe `…/css`,`…/components`,`…/navbar.css`,
+  `…/easyadmin` + `import { initNavbar } from '…/navbar.js'`, y cargarlo con
+  `addWebpackEncoreEntry('admin')`. Verifica antes que `encore_entry_link_tags('admin')` renderiza
+  tags reales (no escapados). Ante la duda, usa ficheros estáticos.
+
+### 12.5 Troubleshooting
+
+| Síntoma | Causa probable | Fix |
+|---|---|---|
+| Botones azul/naranja, sidebar vertical | El CSS del adaptador **no se carga** | Confirma `addCssFile('css/se-admin.css')` + `cache:clear` + hard refresh |
+| Tags `<link>/<script>` visibles como **texto** | `addWebpackEncoreEntry` escapado por EA | Usa ficheros estáticos (§12.2) |
+| Navbar sin reubicar usuario/búsqueda | `se-navbar.js`/init no cargó o selectores no coinciden | Revisa orden de `addJsFile` y los selectores de `relocate` |
+| Submenús mal posicionados | falta el init o `submenus.item/panel` no coincide | Ajusta selectores en el init |
+| Colores no son los del tenant | branding no inyectado | Define `--brand-*` en el layout (§12.2 paso 6) |
+
+---
+
+## 13. Navbar canónica — replicarla 100% fiel
+
+La navbar (patrón *sidebar/menú → header horizontal*) tiene **una sola fuente de verdad**:
+
+- **Valores** → tokens `--se-navbar-*` (`-bg`, `-fg`, `-active`, `-hover`, `-border`,
+  `-scrollbar`, `-brand`). Estética Pronto Pago: header blanco, texto slate, subrayado activo
+  slate, borde inferior fino, scroll horizontal como línea fina oscura.
+- **Estética/posicionamiento** → `navbar.css` (clases `.se-navbar*`).
+- **Comportamiento** → `navbar.js` (ESM) / `navbar.global.js` (clásico, `window.SeNavbar`).
+- **Markup de referencia** → `navbar.html` (cópialo tal cual).
+
+> Cualquier app que cargue `tokens.css + navbar.css` y use ese markup obtiene **exactamente** la
+> misma navbar. EasyAdmin obtiene la **misma** navbar sin el markup `.se-navbar`: su adaptador
+> (`adapters/easyadmin.css`) aplica los **mismos tokens `--se-navbar-*`** a sus selectores nativos.
+> Por eso la navbar de ProntoPago y la de EasyAdmin son **idénticas** (misma fuente de valores).
+
+### Replicar en una app nueva (3 pasos)
+
+```html
+<!-- 1) CSS (orden importa: tokens primero) -->
+<link rel="stylesheet" href=".../tokens.css">
+<link rel="stylesheet" href=".../components.css">
+<link rel="stylesheet" href=".../navbar.css">
+
+<!-- 2) Markup: copia la estructura de navbar.html (.se-navbar, .se-navbar__menu, __item.is-active, __submenu, __actions, __toggle/__overlay/__mobile) -->
+
+<!-- 3) JS: comportamiento -->
+<script src=".../navbar.global.js"></script>   <!-- o: import { initNavbar } from '@smartescrow/design-system/navbar.js' -->
+<script>
+  SeNavbar.init({
+    submenus:   { item: '.se-navbar__item', panel: '.se-navbar__submenu', top: 56, offsetX: -20 },
+    responsive: { toggle: '[data-se-navbar-toggle]', overlay: '[data-se-navbar-overlay]', mobile: '[data-se-navbar-mobile]', openClass: 'is-open' },
+  });
+</script>
+```
+
+### Re-temarla (sin tocar navbar.css)
+Sobrescribe los tokens donde quieras (p. ej. una navbar oscura puntual):
+```css
+.mi-navbar-oscura {
+  --se-navbar-bg: var(--se-slate-900);
+  --se-navbar-fg: var(--se-gray-200);
+  --se-navbar-active: var(--se-color-brand);
+}
+```
+El **modo oscuro global** ya trae sus propios valores `--se-navbar-*` (vía `[data-se-theme="dark"]`).
+
+### En EasyAdmin
+No necesitas el markup `.se-navbar`: sigue la **§12**. El adaptador ya reproduce esta navbar sobre
+`.main-header`/`.main-menu`/`.main-menu-item`/`.submenu` con los mismos `--se-navbar-*`.
+
+---
+
+## 14. Hoja de ruta
 
 - **Adaptadores** oficiales por entorno: EasyAdmin (`--bs-*`), Tailwind preset, SCSS map.
 - **Unificación** con `public/css/se-tokens.css`: extraer el contrato común de naming a un

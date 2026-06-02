@@ -1,6 +1,6 @@
 {
   "name": "@smartescrow/design-system",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Design system SmartEscrow (--se-*): tokens (paleta slate+verde, tipografía Poppins, radios, sombras, espaciado, z-index, modo oscuro), tema Vuetify, componentes reutilizables, navbar (patrón sidebar→header) y adaptador EasyAdmin. Portable a cualquier plataforma.",
   "type": "module",
   "license": "UNLICENSED",
@@ -17,6 +17,7 @@
     "./navbar.css": "./navbar.css",
     "./navbar.js": "./navbar.js",
     "./navbar.global.js": "./navbar.global.js",
+    "./navbar.html": "./navbar.html",
     "./easyadmin": "./adapters/easyadmin.css",
     "./vuetify": "./vuetify-theme.mjs",
     "./package.json": "./package.json"
@@ -28,6 +29,7 @@
     "navbar.css",
     "navbar.js",
     "navbar.global.js",
+    "navbar.html",
     "adapters/easyadmin.css",
     "vuetify-theme.mjs",
     "build-tokens.mjs",
