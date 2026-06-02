@@ -125,10 +125,15 @@ PASOS
      (emite public/build/design-tokens.css para enlazarlo en plantillas Twig standalone) e importa el CSS en el entry JS.
      Si instalas como carpeta hermana con file:, añade  config.resolve.symlinks = false  (si no, Babel intenta inyectar core-js y falla el build).
    - PHP/Twig/HTML sin build: copia node_modules/@smartescrow/design-system/tokens.css a la carpeta pública y enlázalo con <link>. Dark con [data-se-theme="dark"].
-   - EasyAdmin: importa en un entry "admin"  '@smartescrow/design-system/css' + '/components' +
-     '/navbar.css' + '/easyadmin' (este reasigna --bs-* a tokens y themea Bootstrap) e inicializa
-     '/navbar.js' con los selectores de EasyAdmin (relocate/submenus/responsive). Cárgalo con
-     EasyAdmin Assets->addWebpackEncoreEntry('admin'). Conserva SOLO el posicionamiento; el resto, tokens.
+   - EasyAdmin (recomendado: FICHEROS ESTÁTICOS, sin WebpackEncoreBundle — en EA 4.24
+     `addWebpackEncoreEntry` puede no estar habilitado y/o escapar los tags):
+       1) Concatena en un CSS público `tokens.css + components.css + navbar.css + adapters/easyadmin.css`
+          (este reasigna --bs-* a tokens y themea Bootstrap) y cárgalo con `Assets->addCssFile(...)`.
+       2) Copia `navbar.global.js` (build clásica IIFE → window.SeNavbar) a public y cárgalo con
+          `addJsFile(...)`, seguido de un init clásico `SeNavbar.init({relocate,submenus,responsive})`
+          con los selectores de EasyAdmin. La lógica de negocio (fetches, modales) va aparte, en el proyecto.
+       3) Branding: el layout define `--brand-primary/bg/text` (los tokens los respetan).
+     Conserva SOLO el posicionamiento; el resto, tokens. (Ver wallet: bin/build-admin-assets.mjs.)
    Después, centraliza los colores/medidas de marca hardcodeados del proyecto sustituyéndolos por var(--se-*) PRESERVANDO el aspecto. No toques estilos de librerías de terceros.
 4) ¿Faltan tokens? Si este proyecto usa colores/medidas de marca que NO existen en el sistema:
    a) Clona el repo del design system, LEE su CLAUDE.md y README §7 y respétalos.
