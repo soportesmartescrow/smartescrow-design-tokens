@@ -223,7 +223,7 @@
 [data-se-theme="dark"],
 .ea-dark-scheme,
 [data-bs-theme="dark"] {
-  --se-color-primary: var(--brand-primary, var(--se-slate-500));
+  --se-color-primary: var(--se-slate-500);
   --se-color-primary-hover: var(--se-slate-550);
   --se-color-on-primary: #ffffff;
   --se-color-secondary: var(--se-purple-secondary);
@@ -262,12 +262,12 @@
   --se-navbar-scrollbar: var(--se-gray-400);
   --se-navbar-brand: var(--se-green-500);
   --se-navbar-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-  --se-color-bg: var(--brand-bg, var(--se-slate-950));
+  --se-color-bg: var(--se-slate-950);
   --se-color-canvas: var(--se-slate-950);
   --se-color-surface: var(--se-slate-900);
   --se-color-surface-variant: var(--se-slate-800);
   --se-color-surface-muted: var(--se-slate-850);
-  --se-color-text: var(--brand-text, var(--se-gray-200));
+  --se-color-text: var(--se-gray-200);
   --se-color-text-muted: var(--se-gray-400);
   --se-color-text-subtle: var(--se-gray-500);
   --se-color-text-disabled: var(--se-gray-700);

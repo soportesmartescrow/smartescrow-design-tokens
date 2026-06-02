@@ -254,7 +254,7 @@ export const semantic = {
   /* Modo oscuro — superficies a partir de los tonos slate ya presentes;
    * marca/verde se mantienen (legibles) y se aclaran los textos. */
   dark: {
-    'color-primary':        ref('slate.500', { brand: 'primary' }),
+    'color-primary':        ref('slate.500'),
     'color-primary-hover':  ref('slate.550'),
     'color-on-primary':     raw('#ffffff'),
     'color-secondary':      ref('purple.secondary'),
@@ -300,12 +300,14 @@ export const semantic = {
     'navbar-brand':         ref('green.500'),
     'navbar-shadow':        raw('0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)'),
 
-    'color-bg':             ref('slate.950', { brand: 'bg' }),
+    /* En DARK se ignora el branding (--brand-* son colores de modo claro y romperían el
+     * contraste); se usan los valores oscuros del design system. */
+    'color-bg':             ref('slate.950'),
     'color-canvas':         ref('slate.950'),
     'color-surface':        ref('slate.900'),
     'color-surface-variant':ref('slate.800'),
     'color-surface-muted':  ref('slate.850'),
-    'color-text':           ref('gray.200', { brand: 'text' }),
+    'color-text':           ref('gray.200'),
     'color-text-muted':     ref('gray.400'),   // dark: más claro que subtle (jerarquía)
     'color-text-subtle':    ref('gray.500'),   // dark: ~4.6:1 sobre surface (AA)
     'color-text-disabled':  ref('gray.700'),

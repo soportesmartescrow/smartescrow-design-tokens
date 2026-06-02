@@ -418,13 +418,14 @@ div.form-widget a.content-search-reset { display: none; }
 }
 .footer-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;        /* dos filas centradas como Pronto Pago (links arriba, copyright abajo) */
+  justify-content: center;
   align-items: center;
-  gap: var(--se-s-4);
+  gap: var(--se-s-2);
   max-width: 1200px;
   margin: 0 auto;
-  flex-wrap: wrap;
 }
+.footer-links { justify-content: center; }
 .footer-logo { display: flex; align-items: center; gap: var(--se-s-2); font-weight: var(--se-weight-medium); }
 .footer-links { display: flex; gap: var(--se-s-5); flex-wrap: wrap; }
 .footer-links a { color: var(--se-color-footer-text); transition: all .2s ease; font-weight: var(--se-weight-medium); text-decoration: none; }
