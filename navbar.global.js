@@ -24,25 +24,33 @@
     });
   }
 
+  /* Muestra los submenús como position:fixed ALINEADOS BAJO SU ITEM al hover. Necesario
+     cuando el menú vive en un contenedor con overflow (.main-menu overflow-x:auto recorta en
+     vertical); fixed escapa de cualquier overflow ancestro.
+     cfg: { item, panel, gap=0, viewportGap=8, toggleDisplay=true } */
   function positionSubmenus(cfg) {
     cfg = cfg || {};
     if (!cfg.item || !cfg.panel) return;
-    var top = cfg.top != null ? cfg.top : 50;
-    var offsetX = cfg.offsetX != null ? cfg.offsetX : -80;
-    var gap = cfg.gap != null ? cfg.gap : 10;
+    var gap = cfg.gap != null ? cfg.gap : 0;
+    var viewportGap = cfg.viewportGap != null ? cfg.viewportGap : 8;
+    var toggleDisplay = cfg.toggleDisplay !== false;
     $all(cfg.item).forEach(function (it) {
       var sub = it.querySelector(cfg.panel);
       if (!sub) return;
       sub.style.position = 'fixed';
       sub.style.zIndex = '999999';
       sub.style.margin = '0';
-      it.addEventListener('mouseenter', function (e) {
-        sub.style.left = ((e.clientX || 0) + offsetX) + 'px';
-        sub.style.top = top + 'px';
-        var rect = sub.getBoundingClientRect();
-        if (rect.right > window.innerWidth) sub.style.left = (window.innerWidth - rect.width - gap) + 'px';
-        if (rect.bottom > window.innerHeight) sub.style.top = (window.innerHeight - rect.height - gap) + 'px';
-      });
+      function place() {
+        var r = it.getBoundingClientRect();
+        sub.style.left = r.left + 'px';
+        sub.style.top = (r.bottom + gap) + 'px';
+        var sr = sub.getBoundingClientRect();
+        if (sr.right > window.innerWidth - viewportGap) {
+          sub.style.left = Math.max(viewportGap, window.innerWidth - sr.width - viewportGap) + 'px';
+        }
+      }
+      it.addEventListener('mouseenter', function () { if (toggleDisplay) sub.style.display = 'block'; place(); });
+      it.addEventListener('mouseleave', function () { if (toggleDisplay) sub.style.display = 'none'; });
     });
   }
 

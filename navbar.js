@@ -34,10 +34,17 @@ export function relocateNodes(moves = []) {
   });
 }
 
-/** Posiciona los submenús como fixed, cerca del item, sin salirse del viewport.
- *  cfg: { item, panel, top=50, offsetX=-80, gap=10 } */
+/** Muestra los submenús como `position:fixed` ALINEADOS BAJO SU ITEM al hacer hover.
+ *  Esencial cuando el menú vive en un contenedor con overflow (p. ej. `.main-menu` con
+ *  `overflow-x:auto`, que fuerza a recortar en vertical): un submenú `absolute` quedaría
+ *  recortado; `fixed` escapa de cualquier overflow ancestro.
+ *  cfg: { item, panel, gap=0, viewportGap=8, toggleDisplay=true }
+ *   - gap: separación vertical entre el item y el submenú (0 = pegado, evita el "hueco"
+ *     que dispararía mouseleave antes de alcanzar el panel).
+ *   - toggleDisplay: si true, el propio kit muestra/oculta el panel (display block/none),
+ *     así es autosuficiente y no hace falta JS externo para el hover de escritorio. */
 export function positionSubmenus(cfg = {}) {
-  const { item, panel, top = 50, offsetX = -80, gap = 10 } = cfg;
+  const { item, panel, gap = 0, viewportGap = 8, toggleDisplay = true } = cfg;
   if (!item || !panel) return;
   $all(item).forEach((it) => {
     const sub = it.querySelector(panel);
@@ -45,14 +52,17 @@ export function positionSubmenus(cfg = {}) {
     sub.style.position = 'fixed';
     sub.style.zIndex = '999999';
     sub.style.margin = '0';
-    it.addEventListener('mouseenter', (e) => {
-      const x = (e.clientX || 0) + offsetX;
-      sub.style.left = x + 'px';
-      sub.style.top = top + 'px';
-      const rect = sub.getBoundingClientRect();
-      if (rect.right > window.innerWidth) sub.style.left = (window.innerWidth - rect.width - gap) + 'px';
-      if (rect.bottom > window.innerHeight) sub.style.top = (window.innerHeight - rect.height - gap) + 'px';
-    });
+    const place = () => {
+      const r = it.getBoundingClientRect();
+      sub.style.left = r.left + 'px';
+      sub.style.top = (r.bottom + gap) + 'px';
+      const sr = sub.getBoundingClientRect();          // re-clamp al viewport tras medir
+      if (sr.right > window.innerWidth - viewportGap) {
+        sub.style.left = Math.max(viewportGap, window.innerWidth - sr.width - viewportGap) + 'px';
+      }
+    };
+    it.addEventListener('mouseenter', () => { if (toggleDisplay) sub.style.display = 'block'; place(); });
+    it.addEventListener('mouseleave', () => { if (toggleDisplay) sub.style.display = 'none'; });
   });
 }
 
