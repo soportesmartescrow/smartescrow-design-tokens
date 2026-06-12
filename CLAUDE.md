@@ -127,6 +127,28 @@ SemVer para tokens: **añadir** = minor · **renombrar/eliminar** = major ·
 - **Branding del layout**: define `--brand-primary/bg/text` (no `--sidebar-bg` etc.); el adaptador
   mapea las legacy a tokens. Logo: acotar tamaño (venía con `height` inline grande).
 
+### Aprendido en la integración `factoring` (v1.4.1) — ya resuelto en el adaptador
+
+Estos 5 patrones reincidían en cada EasyAdmin y obligaban a crear un `*-overrides.css` por proyecto.
+**Desde v1.4.1 el adaptador los cubre**, así que un EA nuevo NO debería necesitar overrides para ellos:
+
+- **`.btn-primary` AZUL de EasyAdmin pisa el verde**: `vendor/easycorp/easyadmin-bundle/public/app.*.css`
+  define `.btn-primary { --bs-btn-bg:#0d6efd; --bs-btn-hover-bg:#0b5ed7 }` y se carga DESPUÉS de
+  `se-admin.css`, ganando en `:hover/:focus/:active`. El adaptador ahora fuerza el verde con
+  `html body .btn-{primary,warning,info}` + `!important` en todos los estados. (Si un proyecto
+  quiere otro color de feedback en dark —decisión suya— que lo ponga en su overrides.)
+- **Botón del selector de plataformas** (`delegation-bundle` → `platform_navigation`,
+  `#whiteLabelPlatformsDropdown`): heredaba el padding default de Bootstrap y variaba de tamaño según
+  el aspect-ratio del logo. El adaptador lo estandariza (40px alto, 52–76px ancho, logo 26px, caret
+  triangular explícito) y lo mantiene **claro también en dark** (el logo del tenant no tiene variante
+  oscura; sobre slate-900 sería ilegible).
+- **`.card-footer .btn`**: altura inconsistente y sin hover "rich". El adaptador añade
+  `min-height:40px` + hover `filter:brightness(.92) + translateY(-1px) + shadow-md` (y `:active` .85).
+- **Item activo del navbar en dark "como en blanco seleccionado"**: el `<a>` activo heredaba un
+  fondo claro. El adaptador resetea `background:transparent` en `.main-menu-item.active a` (light y
+  dark) para que el subrayado del token sea el único distintivo.
+- **`min-height:40px` en `.btn-sm`** para que no queden bajos de altura.
+
 ---
 
 ## Ejemplo: prompt para adoptar el sistema en un proyecto NUEVO
@@ -184,6 +206,11 @@ PASOS
             `.main-footer`…) a `--se-*`, pinta navbar con `--se-navbar-*`, el avatar con `mdi-account-circle`,
             el footer fiel a ProntoPago, el dark con `body.ea-dark-scheme {…}` y evita que una tabla ancha
             rompa nav/footer (`body/.wrapper { overflow-x: clip }` + scroll interno en `.datagrid`).
+          · Desde v1.4.1 el adaptador YA cubre (no hagas overrides para esto): el `.btn-primary` AZUL
+            de EasyAdmin → verde de marca; el botón del selector de plataformas (`#whiteLabelPlatformsDropdown`,
+            compacto y claro también en dark); hover "rich" + `min-height` en `.card-footer .btn` y `.btn-sm`;
+            y el reset de fondo del item activo del navbar en dark. Si algo NO encaja, primero PROPÓN
+            mejorar el adaptador del paquete antes de crear un CSS de overrides en el proyecto.
           Hazlo con un pequeño script Node (lee del paquete en node_modules y escribe a public/).
        2) NAVBAR JS. Copia `navbar.global.js` (build IIFE → `window.SeNavbar`) a public (p.ej.
           public/js/se-navbar.js).

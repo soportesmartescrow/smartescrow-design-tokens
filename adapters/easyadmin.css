@@ -121,6 +121,33 @@ article.content,
 }
 .logo-link:hover img, #header-logo:hover img { transform: scale(1.05); }
 
+/* Selector de plataformas (delegation-bundle: platform_navigation). El <button> trae el
+   <img> del branding del tenant; estandarizamos tamaño/forma para que sea compacto e igual
+   en todos los proyectos, en vez de heredar el padding default de Bootstrap. */
+.web-dropdown-container .btn.dropdown-toggle,
+button#whiteLabelPlatformsDropdown.btn.dropdown-toggle {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--se-s-1);
+  height: 40px; min-width: 52px; max-width: 76px;
+  padding: var(--se-s-1) var(--se-s-2);
+  border-radius: var(--se-r-md);
+  /* Fondo claro SIEMPRE (también en dark): el logo corporativo del tenant está pensado para
+     fondo claro y no tiene variante oscura; sobre slate-900 sería ilegible. */
+  background: var(--se-gray-0); color: var(--se-slate-600); border: 1px solid var(--se-color-border);
+}
+.web-dropdown-container .btn.dropdown-toggle:hover,
+button#whiteLabelPlatformsDropdown.btn.dropdown-toggle:hover { background: var(--se-gray-50); }
+.web-dropdown-container .btn.dropdown-toggle img,
+button#whiteLabelPlatformsDropdown.btn.dropdown-toggle img {
+  max-height: 26px !important; height: auto !important; width: auto !important; margin: 0 !important; object-fit: contain;
+}
+/* Caret del dropdown (como wallet): triángulo explícito, no depende del default de Bootstrap. */
+.web-dropdown-container .btn.dropdown-toggle::after,
+button#whiteLabelPlatformsDropdown.btn.dropdown-toggle::after {
+  display: inline-block; margin-left: var(--se-s-1);
+  border-top: 0.3em solid var(--se-slate-600); border-right: 0.3em solid transparent;
+  border-bottom: 0; border-left: 0.3em solid transparent;
+}
+
 /* Menú horizontal */
 nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; overflow: visible !important; }
 .main-menu, .main-menu-wrapper .main-menu {
@@ -150,7 +177,12 @@ nav.main-menu-wrapper { flex: 1 1 auto !important; min-width: 300px !important; 
 }
 a.menu-item-contents { padding: 0 var(--se-s-3); height: var(--se-size-navbar); }
 .main-menu-item a:hover, a.menu-item-contents:hover { background: var(--se-navbar-hover) !important; }
-.main-menu-item.active a { font-weight: var(--se-weight-medium); }
+/* El subrayado del token es el ÚNICO distintivo del item activo: sin fondo. En algunos
+   estados del navegador el <a> activo heredaba un fondo claro (muy visible en dark, "como
+   blanco seleccionado"); lo reseteamos a transparent. */
+.main-menu-item.active a,
+.main-menu-item.active > a,
+.main-menu-item.active a.menu-item-contents { font-weight: var(--se-weight-medium); background: transparent !important; }
 /* Indicador activo: corto, fino y cuadrado (como el slider de Pronto Pago) */
 .main-menu-item.active::after, #main-menu .menu .menu-item.active:after {
   content: '';
@@ -291,15 +323,25 @@ button {
   min-width: 64px;
   transition: all .2s ease;
 }
-.btn-primary { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
-.btn-primary:hover {
-  background-color: var(--se-color-brand-hover); border-color: var(--se-color-brand-hover);
+/* IMPORTANTE: EasyAdmin (vendor/easycorp/easyadmin-bundle/public/app.*.css) define
+   .btn-primary con --bs-btn-bg/--bs-btn-hover-bg AZUL (#0d6efd) y lo carga DESPUÉS de
+   se-admin.css, pisando los tokens en :hover/:focus/:active. Por eso forzamos el verde de
+   marca con `html body` + !important (cubre primary/warning/info en todos los estados). */
+html body .btn-primary,
+html body .btn-warning,
+html body .btn-info { background-color: var(--se-color-brand) !important; border-color: var(--se-color-brand) !important; color: var(--se-color-on-brand) !important; }
+html body .btn-primary:hover, html body .btn-primary:focus, html body .btn-primary:focus-visible, html body .btn-primary:active,
+html body .btn-warning:not(:disabled):not(.disabled):hover, html body .btn-warning:not(:disabled):not(.disabled):focus, html body .btn-warning:not(:disabled):not(.disabled):active,
+html body .btn-info:hover, html body .btn-info:focus, html body .btn-info:active {
+  background-color: var(--se-color-brand-hover) !important; border-color: var(--se-color-brand-hover) !important; color: var(--se-color-on-brand) !important;
   transform: translateY(-1px); box-shadow: var(--se-shadow-sm);
 }
-.btn-warning,
-.btn-warning:not(:disabled):not(.disabled):hover,
-.btn-warning:not(:disabled):not(.disabled):focus { background-color: var(--se-color-brand); border-color: var(--se-color-brand); color: var(--se-color-on-brand); }
-.btn-group-sm > .btn, .btn-sm { padding: 10px 20px !important; font-size: var(--se-text-base); text-transform: uppercase; font-weight: var(--se-weight-medium); }
+.btn-group-sm > .btn, .btn-sm { padding: 10px 20px !important; min-height: 40px; font-size: var(--se-text-base); text-transform: uppercase; font-weight: var(--se-weight-medium); }
+/* Botones de pie de card: altura consistente + hover "rich" (lift + sombra + brightness),
+   que antes vivía en CSS legacy de cada proyecto. */
+.card-footer .btn { min-height: 40px; padding: 10px 18px; border-radius: var(--se-r-md); line-height: 1.3; display: inline-flex; align-items: center; justify-content: center; }
+.card-footer .btn:not(:disabled):hover { filter: brightness(0.92); transform: translateY(-1px); box-shadow: var(--se-shadow-md); }
+.card-footer .btn:not(:disabled):active { filter: brightness(0.85); }
 .button-download:hover, .button-plus:hover { background-color: var(--se-color-brand); color: var(--se-color-on-brand); }
 div.btn-group.action-filters > a { padding: 8px 10px; background-color: var(--se-color-brand); color: var(--se-color-on-brand); }
 div.btn-group.action-filters > a > i { color: var(--se-color-on-brand); }
@@ -577,6 +619,14 @@ body.ea-dark-scheme {
 .ea-dark-scheme span.user-name,
 .ea-dark-scheme .dropdown-settings-button { color: var(--se-gray-200) !important; }
 .ea-dark-scheme .user-avatar { background: var(--se-gray-200) !important; color: var(--se-slate-950) !important; }
+/* Item activo en dark: solo el subrayado del token, sin fondo claro heredado */
+.ea-dark-scheme .main-menu-item.active,
+.ea-dark-scheme .main-menu-item.active > a,
+.ea-dark-scheme .main-menu-item.active a.menu-item-contents { background: transparent !important; color: var(--se-gray-200) !important; }
+/* Botón de plataformas: se mantiene claro (logo del tenant sin variante dark); borde algo
+   más marcado para separarlo del navbar oscuro */
+.ea-dark-scheme .web-dropdown-container .btn.dropdown-toggle,
+.ea-dark-scheme button#whiteLabelPlatformsDropdown.btn.dropdown-toggle { background: var(--se-gray-0) !important; color: var(--se-slate-600) !important; border-color: var(--se-gray-400) !important; }
 
 /* Superficies oscuras + TEXTO legible (claro) — cubre cards Bootstrap y su contenido */
 .ea-dark-scheme .card,
